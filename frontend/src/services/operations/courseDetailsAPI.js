@@ -70,29 +70,20 @@ export const fetchCourseDetails = async (courseId) => {
   return result
 }
 
-// Default categories to use when API fails
-const DEFAULT_CATEGORIES = [
-  { name: 'Web Development', _id: '1', description: 'Learn web development technologies' },
-  { name: 'Mobile Development', _id: '2', description: 'Learn mobile app development' },
-  { name: 'Data Science', _id: '3', description: 'Learn data science and analytics' },
-  { name: 'Business', _id: '4', description: 'Learn business and entrepreneurship' },
-  { name: 'Design', _id: '5', description: 'Learn design principles and tools' }
-];
-
 // ================ fetch Course Categories ================
 export const fetchCourseCategories = async () => {
   try {
     const response = await apiConnector("GET", COURSE_CATEGORIES_API);
     
     if (!response?.data?.success || !Array.isArray(response?.data?.data)) {
-      console.log("Using default categories due to invalid API response");
-      return DEFAULT_CATEGORIES;
+      console.log("No categories found or invalid API response");
+      return [];
     }
 
     return response.data.data;
   } catch (error) {
-    console.log("Using default categories due to API error:", error.message);
-    return DEFAULT_CATEGORIES;
+    console.log("Error fetching categories:", error.message);
+    return [];
   }
 }
 

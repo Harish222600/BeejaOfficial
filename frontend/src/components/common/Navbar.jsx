@@ -26,25 +26,11 @@ const Navbar = () => {
       if (res && Array.isArray(res)) {
         setSubLinks(res)
       } else {
-        // If no categories are available, set default categories
-        setSubLinks([
-          { name: 'Web Development', _id: '1' },
-          { name: 'Mobile Development', _id: '2' },
-          { name: 'Data Science', _id: '3' },
-          { name: 'Business', _id: '4' },
-          { name: 'Design', _id: '5' }
-        ])
+        setSubLinks([])
       }
     } catch (error) {
       console.log("Could not fetch the category list = ", error)
-      // Set default categories on error
-      setSubLinks([
-        { name: 'Web Development', _id: '1' },
-        { name: 'Mobile Development', _id: '2' },
-        { name: 'Data Science', _id: '3' },
-        { name: 'Business', _id: '4' },
-        { name: 'Design', _id: '5' }
-      ])
+      setSubLinks([])
     } finally {
       setLoading(false)
     }
@@ -105,15 +91,21 @@ const Navbar = () => {
                       </div>
                     ) : (
                       <>
-                        {subLinks?.map((subLink, i) => (
-                          <Link
-                            to={`/catalog/${subLink.name.split(" ").join("-").toLowerCase()}`}
-                            className="rounded-lg bg-transparent py-4 pl-4 hover:bg-richblack-50 transition-all duration-200"
-                            key={i}
-                          >
-                            <p className="text-richblack-900">{subLink.name}</p>
-                          </Link>
-                        ))}
+                        {subLinks?.length > 0 ? (
+                          subLinks.map((subLink, i) => (
+                            <Link
+                              to={`/catalog/${subLink.name.split(" ").join("-").toLowerCase()}`}
+                              className="rounded-lg bg-transparent py-4 pl-4 hover:bg-richblack-50 transition-all duration-200"
+                              key={i}
+                            >
+                              <p className="text-richblack-900">{subLink.name}</p>
+                            </Link>
+                          ))
+                        ) : (
+                          <div className="py-4 pl-4 text-richblack-900">
+                            No categories available
+                          </div>
+                        )}
                       </>
                     )}
                   </div>
