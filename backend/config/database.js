@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const MONGO_URI = "mongodb://127.0.0.1:27017/learnhub";
+const MONGO_URI = "mongodb://localhost:27017/learnhub";
 exports.connectDB = async () => {
   try {
     await mongoose.connect(MONGO_URI, {
