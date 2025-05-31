@@ -43,23 +43,39 @@ exports.createCategory = async (req, res) => {
 // ================ get All Category ================
 exports.showAllCategories = async (req, res) => {
     try {
+        console.log('Fetching all categories from database...');
+        
         // get all category from DB
         const allCategories = await Category.find({}, { name: true, description: true });
+        
+        console.log(`Found ${allCategories.length} categories`);
+
+        if (!allCategories) {
+            console.log('No categories found in database');
+            return res.status(404).json({
+                success: false,
+                message: 'No categories found'
+            });
+        }
 
         // return response
         res.status(200).json({
             success: true,
             data: allCategories,
-            message: 'All allCategories fetched successfully'
-        })
+            message: 'Categories fetched successfully'
+        });
     }
     catch (error) {
-        console.log('Error while fetching all allCategories');
-        console.log(error);
+        console.error('Error while fetching categories:', {
+            message: error.message,
+            stack: error.stack
+        });
+        
         res.status(500).json({
             success: false,
-            message: 'Error while fetching all allCategories'
-        })
+            message: 'Error while fetching categories',
+            error: error.message
+        });
     }
 }
 

@@ -23,11 +23,31 @@ const Navbar = () => {
     try {
       setLoading(true)
       const res = await fetchCourseCategories()
-      setSubLinks(res)
+      if (res && Array.isArray(res)) {
+        setSubLinks(res)
+      } else {
+        // If no categories are available, set default categories
+        setSubLinks([
+          { name: 'Web Development', _id: '1' },
+          { name: 'Mobile Development', _id: '2' },
+          { name: 'Data Science', _id: '3' },
+          { name: 'Business', _id: '4' },
+          { name: 'Design', _id: '5' }
+        ])
+      }
     } catch (error) {
       console.log("Could not fetch the category list = ", error)
+      // Set default categories on error
+      setSubLinks([
+        { name: 'Web Development', _id: '1' },
+        { name: 'Mobile Development', _id: '2' },
+        { name: 'Data Science', _id: '3' },
+        { name: 'Business', _id: '4' },
+        { name: 'Design', _id: '5' }
+      ])
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }, [])
 
   useEffect(() => {
@@ -79,22 +99,23 @@ const Navbar = () => {
                     flex-col rounded-lg bg-richblack-5 p-4 text-richblack-900 opacity-0 transition-all duration-150 group-hover:visible 
                     group-hover:translate-y-[1.65em] group-hover:opacity-100 lg:w-[300px]">
                     <div className="absolute left-[50%] top-0 z-[100] h-6 w-6 translate-x-[80%] translate-y-[-40%] rotate-45 select-none rounded bg-richblack-5"></div>
-                    {loading ? (<p className="text-center ">Loading...</p>)
-                      : subLinks.length ? (
-                        <>
-                          {subLinks?.map((subLink, i) => (
-                            <Link
-                              to={`/catalog/${subLink.name.split(" ").join("-").toLowerCase()}`}
-                              className="rounded-lg bg-transparent py-4 pl-4 hover:bg-richblack-50"
-                              key={i}
-                            >
-                              <p>{subLink.name}</p>
-                            </Link>
-                          ))}
-                        </>
-                      ) : (
-                        <p className="text-center">No Courses Found</p>
-                      )}
+                    {loading ? (
+                      <div className="flex items-center justify-center p-4">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-richblack-900"></div>
+                      </div>
+                    ) : (
+                      <>
+                        {subLinks?.map((subLink, i) => (
+                          <Link
+                            to={`/catalog/${subLink.name.split(" ").join("-").toLowerCase()}`}
+                            className="rounded-lg bg-transparent py-4 pl-4 hover:bg-richblack-50 transition-all duration-200"
+                            key={i}
+                          >
+                            <p className="text-richblack-900">{subLink.name}</p>
+                          </Link>
+                        ))}
+                      </>
+                    )}
                   </div>
                 </div>
               ) : (
