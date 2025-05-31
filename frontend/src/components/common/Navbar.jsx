@@ -56,9 +56,15 @@ const Navbar = () => {
     };
   }, [controlNavbar]);
 
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen((prev) => !prev);
+  };
+
   return (
     <nav
-      className={`z-[10] flex h-14 w-full items-center justify-center border-b-[1px] border-b-richblack-700 text-white translate-y-0 transition-all ${showNavbar}`}
+      className={`z-[10] flex h-14 w-full items-center justify-center border-b-[1px] border-b-richblack-700 bg-richblack-900 text-white translate-y-0 transition-all ${showNavbar}`}
     >
       <div className="flex w-11/12 max-w-maxContent items-center justify-between">
         <Link to="/" aria-label="Home">
@@ -70,6 +76,30 @@ const Navbar = () => {
             alt="StudyNotion Logo"
           />
         </Link>
+
+        {/* Hamburger menu button - visible on small screens */}
+        <button
+          onClick={toggleMobileMenu}
+          aria-label="Toggle menu"
+          aria-expanded={mobileMenuOpen}
+          className="sm:hidden flex flex-col h-6 w-6 justify-between items-center group"
+        >
+          <span
+            className={`h-0.5 w-full bg-white rounded-lg transform transition duration-300 ease-in-out ${
+              mobileMenuOpen ? "rotate-45 translate-y-2.5" : ""
+            }`}
+          />
+          <span
+            className={`h-0.5 w-full bg-white rounded-lg transition-all duration-300 ease-in-out ${
+              mobileMenuOpen ? "opacity-0" : "opacity-100"
+            }`}
+          />
+          <span
+            className={`h-0.5 w-full bg-white rounded-lg transform transition duration-300 ease-in-out ${
+              mobileMenuOpen ? "-rotate-45 -translate-y-2.5" : ""
+            }`}
+          />
+        </button>
 
         {/* Nav Links - visible for only large devices */}
         <ul className="hidden sm:flex gap-x-6 text-richblack-25">
@@ -147,6 +177,75 @@ const Navbar = () => {
           </li>
         </ul>
 
+        {/* Mobile menu - visible on small devices */}
+        {mobileMenuOpen && (
+          <div className="absolute top-14 left-0 z-50 w-full bg-richblack-900 p-4 sm:hidden">
+            <ul className="flex flex-col gap-4 text-white">
+              {NavbarLinks.map((link, index) => (
+                <li key={index}>
+                  {link.title === "Catalog" ? (
+                    <details>
+                      <summary className="cursor-pointer rounded-xl p-2 hover:bg-richblack-800">
+                        Catalog
+                      </summary>
+                      <div className="mt-2 flex flex-col gap-2 pl-4">
+                        {loading ? (
+                          <p>Loading...</p>
+                        ) : subLinks.length ? (
+                          subLinks.map((subLink, i) => (
+                            <Link
+                              key={i}
+                              to={`/catalog/${subLink.name
+                                .split(" ")
+                                .join("-")
+                                .toLowerCase()}`}
+                              className="rounded-lg py-2 px-3 hover:bg-richblack-800"
+                              onClick={() => setMobileMenuOpen(false)}
+                            >
+                              {subLink.name}
+                            </Link>
+                          ))
+                        ) : (
+                          <p>No Courses Found</p>
+                        )}
+                      </div>
+                    </details>
+                  ) : (
+                    <Link
+                      to={link?.path}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block rounded-xl p-2 hover:bg-richblack-800"
+                    >
+                      {link.title}
+                    </Link>
+                  )}
+                </li>
+              ))}
+
+              <details>
+                <summary className="cursor-pointer rounded-xl p-2 hover:bg-richblack-800">
+                  Services
+                </summary>
+                <div className="mt-2 flex flex-col gap-2 pl-4">
+                  <Link
+                    to="/services/institute"
+                    className="rounded-lg py-2 px-3 hover:bg-richblack-800"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    For Institute
+                  </Link>
+                  <Link
+                    to="/services/student"
+                    className="rounded-lg py-2 px-3 hover:bg-richblack-800"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    For Student
+                  </Link>
+                </div>
+              </details>
+            </ul>
+          </div>
+        )}
       </div>
     </nav>
   );
