@@ -81,13 +81,10 @@ exports.showAllCategories = async (req, res) => {
 
 
 
-// ================ Get Category Page Details ================
 exports.getCategoryPageDetails = async (req, res) => {
     try {
         const { categoryId } = req.body
-        // console.log("PRINTING CATEGORY ID: ", categoryId);
 
-        // Get courses for the specified category
         const selectedCategory = await Category.findById(categoryId)
             .populate({
                 path: "courses",
@@ -96,18 +93,11 @@ exports.getCategoryPageDetails = async (req, res) => {
             })
             .exec()
 
-        // console.log('selectedCategory = ', selectedCategory)
-        // Handle the case when the category is not found
         if (!selectedCategory) {
-            // console.log("Category not found.")
             return res.status(404).json({ success: false, message: "Category not found" })
         }
 
-
-
-        // Handle the case when there are no courses
         if (selectedCategory.courses.length === 0) {
-            // console.log("No courses found for the selected category.")
             return res.status(404).json({
                 success: false,
                 data: null,
@@ -115,7 +105,6 @@ exports.getCategoryPageDetails = async (req, res) => {
             })
         }
 
-        // Get courses for other categories
         const categoriesExceptSelected = await Category.find({
             _id: { $ne: categoryId },
         })
@@ -130,8 +119,7 @@ exports.getCategoryPageDetails = async (req, res) => {
             })
             .exec()
 
-        //console.log("Different COURSE", differentCategory)
-        // Get top-selling courses across all categories
+        // Filter out courses from mostSellingCourses that are already in selectedCategory.courses
         const allCategories = await Category.find()
             .populate({
                 path: "courses",
@@ -143,11 +131,31 @@ exports.getCategoryPageDetails = async (req, res) => {
             .exec()
 
         const allCourses = allCategories.flatMap((category) => category.courses)
-        const mostSellingCourses = allCourses
+
+        // Create a set of selectedCategory course IDs for filtering
+        const selectedCourseIds = new Set(selectedCategory.courses.map(course => course._id.toString()))
+
+        // Filter mostSellingCourses to exclude courses already in selectedCategory
+        let mostSellingCourses = allCourses
+            .filter(course => !selectedCourseIds.has(course._id.toString()))
             .sort((a, b) => b.sold - a.sold)
             .slice(0, 10)
 
-        // console.log("mostSellingCourses COURSE", mostSellingCourses)
+        // Add courses from differentCategory as additional related courses, excluding duplicates
+        const differentCategoryCourseIds = new Set(differentCategory.courses.map(course => course._id.toString()))
+        const additionalCourses = differentCategory.courses.filter(course => !selectedCourseIds.has(course._id.toString()))
+
+        // Combine mostSellingCourses and additionalCourses, ensuring no duplicates
+        const combinedCoursesMap = new Map()
+        mostSellingCourses.forEach(course => combinedCoursesMap.set(course._id.toString(), course))
+        additionalCourses.forEach(course => {
+            if (!combinedCoursesMap.has(course._id.toString())) {
+                combinedCoursesMap.set(course._id.toString(), course)
+            }
+        })
+
+        mostSellingCourses = Array.from(combinedCoursesMap.values())
+
         res.status(200).json({
             success: true,
             data: {

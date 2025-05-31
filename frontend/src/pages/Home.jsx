@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from "react-router-dom"
 import { useDispatch } from 'react-redux';
+import { showAllCategories } from '../services/operations/categoryAPI'
 
 import HighlightText from '../components/core/HomePage/HighlightText'
 import CTAButton from "../components/core/HomePage/Button"
@@ -52,7 +53,6 @@ const randomImges = [
 // hardcoded
 
 
-
 const Home = () => {
 
     // get background random images
@@ -65,26 +65,50 @@ const Home = () => {
 
     // console.log('bg ==== ', backgroundImg)
 
-    // get courses data
+    // get categories for dynamic categoryId
+    const [categories, setCategories] = useState([]);
+    const [categoryID, setCategoryID] = useState(null);
     const [CatalogPageData, setCatalogPageData] = useState(null);
-    const categoryID = "6506c9dff191d7ffdb4a3fe2" // hard coded
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+
     const dispatch = useDispatch();
 
     useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const allCategories = await showAllCategories();
+                setCategories(allCategories);
+                if (allCategories.length > 0) {
+                    setCategoryID(allCategories[0]._id); // set first category as default
+                }
+            } catch (err) {
+                setError("Failed to fetch categories");
+            }
+        }
+        fetchCategories();
+    }, [])
+
+    useEffect(() => {
         const fetchCatalogPageData = async () => {
-
-            const result = await getCatalogPageData(categoryID, dispatch);
-            setCatalogPageData(result);
-            // console.log("page data ==== ",CatalogPageData);
+            if (!categoryID) return;
+            setLoading(true);
+            setError(null);
+            try {
+                const result = await getCatalogPageData(categoryID, dispatch);
+                console.log("CatalogPageData API result:", result);
+                setCatalogPageData(result);
+            } catch (err) {
+                console.error("Error fetching catalog page data:", err);
+                setError("Failed to fetch catalog page data");
+            } finally {
+                setLoading(false);
+            }
         }
-        if (categoryID) {
-            fetchCatalogPageData();
-        }
-    }, [categoryID])
-
+        fetchCatalogPageData();
+    }, [categoryID, dispatch])
 
     // console.log('================ CatalogPageData?.selectedCourses ================ ', CatalogPageData)
-
 
     return (
         <React.Fragment>
@@ -217,13 +241,37 @@ const Home = () => {
                         <h2 className='text-white mb-6 text-2xl '>
                             Popular Picks for You 🏆
                         </h2>
-                        <Course_Slider Courses={CatalogPageData?.selectedCategory?.courses} />
+                        {loading ? (
+                            <p className="text-white">Loading popular picks...</p>
+                        ) : error ? (
+                            <p className="text-red-500">{error}</p>
+                        ) : (
+                            <Course_Slider Courses={CatalogPageData?.selectedCategory?.courses} />
+                        )}
                     </div>
                     <div className=' mx-auto box-content w-full max-w-maxContentTab px- py-12 lg:max-w-maxContent'>
                         <h2 className='text-white mb-6 text-2xl '>
                             Top Enrollments Today 🔥
                         </h2>
-                        <Course_Slider Courses={CatalogPageData?.mostSellingCourses} />
+                        {loading ? (
+                            <p className="text-white">Loading top enrollments...</p>
+                        ) : error ? (
+                            <p className="text-red-500">{error}</p>
+                        ) : (
+                            <Course_Slider Courses={CatalogPageData?.mostSellingCourses} />
+                        )}
+                    </div>
+                    <div className=' mx-auto box-content w-full max-w-maxContentTab px- py-12 lg:max-w-maxContent'>
+                        <h2 className='text-white mb-6 text-2xl '>
+                            Additional Courses You May Like 📚
+                        </h2>
+                        {loading ? (
+                            <p className="text-white">Loading additional courses...</p>
+                        ) : error ? (
+                            <p className="text-red-500">{error}</p>
+                        ) : (
+                            <Course_Slider Courses={CatalogPageData?.differentCategory?.courses} />
+                        )}
                     </div>
 
 
