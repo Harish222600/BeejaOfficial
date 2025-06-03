@@ -95,7 +95,6 @@ router.delete("/deleteCourse", auth, isInstructor, deleteCourse)
 router.post("/updateCourseProgress", auth, isStudent, updateCourseProgress)
 
 
-
 // ********************************************************************************************************
 //                                      Category routes (Only by Admin)
 // ********************************************************************************************************
@@ -105,8 +104,6 @@ router.post("/updateCourseProgress", auth, isStudent, updateCourseProgress)
 router.post('/createCategory', createCategory);
 router.get('/showAllCategories', showAllCategories);
 router.post("/getCategoryPageDetails", getCategoryPageDetails)
-
-
 
 
 // ********************************************************************************************************

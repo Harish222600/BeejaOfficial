@@ -4,6 +4,10 @@ const courseSchema = new mongoose.Schema({
     courseName: {
         type: String
     },
+    isVisible: {
+        type: Boolean,
+        default: true,
+    },
     courseDescription: {
         type: String
     },

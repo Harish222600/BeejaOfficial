@@ -88,7 +88,7 @@ exports.getCategoryPageDetails = async (req, res) => {
         const selectedCategory = await Category.findById(categoryId)
             .populate({
                 path: "courses",
-                match: { status: "Published" },
+                match: { status: "Published", isVisible: true },
                 populate: "ratingAndReviews",
             })
             .exec()
@@ -115,7 +115,7 @@ exports.getCategoryPageDetails = async (req, res) => {
         )
             .populate({
                 path: "courses",
-                match: { status: "Published" },
+                match: { status: "Published", isVisible: true },
             })
             .exec()
 
@@ -123,7 +123,7 @@ exports.getCategoryPageDetails = async (req, res) => {
         const allCategories = await Category.find()
             .populate({
                 path: "courses",
-                match: { status: "Published" },
+                match: { status: "Published", isVisible: true },
                 populate: {
                     path: "instructor",
                 },

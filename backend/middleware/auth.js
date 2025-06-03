@@ -8,40 +8,40 @@ require('dotenv').config();
 // user Authentication by checking token validating
 exports.auth = (req, res, next) => {
     try {
+        console.log('Auth middleware called for:', req.method, req.url);
+        
         // extract token by anyone from this 3 ways
         const token = req.body?.token || req.cookies?.token || req.header('Authorization')?.replace('Bearer ', '');
 
+        console.log('Token extraction:', {
+            fromBody: !!req.body?.token,
+            fromCookies: !!req.cookies?.token,
+            fromHeaders: !!req.header('Authorization'),
+            tokenExists: !!token
+        });
+
         // if token is missing
         if (!token) {
+            console.log('Token is missing');
             return res.status(401).json({
                 success: false,
                 message: 'Token is Missing'
             });
         }
 
-        // console.log('Token ==> ', token);
-        // console.log('From body -> ', req.body?.token);
-        // console.log('from cookies -> ', req.cookies?.token);
-        // console.log('from headers -> ', req.header('Authorization')?.replace('Bearer ', ''));
-
         // verify token
         try {
             const decode = jwt.verify(token, process.env.JWT_SECRET);
-            // console.log('verified decode token => ', decode);
+            console.log('Token verified successfully:', {
+                email: decode.email,
+                accountType: decode.accountType,
+                id: decode.id
+            });
             
-            // *********** example from console ***********
-            // verified decode token =>  {
-            //     email: 'buydavumli@biyac.com',
-            //     id: '650d6ae2914831142c702e4c',
-            //     accountType: 'Student',
-            //     iat: 1699452446,
-            //     exp: 1699538846
-            //   }
             req.user = decode;
         }
         catch (error) {
-            console.log('Error while decoding token');
-            console.log(error);
+            console.log('Error while decoding token:', error.message);
             return res.status(401).json({
                 success: false,
                 error: error.message,
@@ -52,8 +52,7 @@ exports.auth = (req, res, next) => {
         next();
     }
     catch (error) {
-        console.log('Error while token validating');
-        console.log(error);
+        console.log('Error while token validating:', error.message);
         return res.status(500).json({
             success: false,
             messgae: 'Error while token validating'

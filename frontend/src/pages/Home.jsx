@@ -188,14 +188,14 @@ const Home = () => {
                             ctabtn1={
                                 {
                                     btnText: "try it yourself",
-                                    linkto: "/signup",
+                                    linkto: "/Signup",
                                     active: true,
                                 }
                             }
                             ctabtn2={
                                 {
                                     btnText: "learn more",
-                                    linkto: "/login",
+                                    linkto: "/Login",
                                     active: false,
                                 }
                             }
@@ -246,7 +246,7 @@ const Home = () => {
                         ) : error ? (
                             <p className="text-red-500">{error}</p>
                         ) : (
-                            <Course_Slider Courses={CatalogPageData?.selectedCategory?.courses} />
+                            <Course_Slider Courses={CatalogPageData?.selectedCategory?.courses?.filter(course => course.isVisible)} />
                         )}
                     </div>
                     <div className=' mx-auto box-content w-full max-w-maxContentTab px- py-12 lg:max-w-maxContent'>
@@ -258,7 +258,7 @@ const Home = () => {
                         ) : error ? (
                             <p className="text-red-500">{error}</p>
                         ) : (
-                            <Course_Slider Courses={CatalogPageData?.mostSellingCourses} />
+                            <Course_Slider Courses={CatalogPageData?.mostSellingCourses?.filter(course => course.isVisible)} />
                         )}
                     </div>
                     <div className=' mx-auto box-content w-full max-w-maxContentTab px- py-12 lg:max-w-maxContent'>
@@ -270,7 +270,7 @@ const Home = () => {
                         ) : error ? (
                             <p className="text-red-500">{error}</p>
                         ) : (
-                            <Course_Slider Courses={CatalogPageData?.differentCategory?.courses} />
+                            <Course_Slider Courses={CatalogPageData?.differentCategory?.courses?.filter(course => course.isVisible)} />
                         )}
                     </div>
 

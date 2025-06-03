@@ -2,6 +2,10 @@ const nodemailer = require('nodemailer');
 
 const mailSender = async (email, title, body) => {
     try {
+        if (!process.env.MAIL_HOST || !process.env.MAIL_USER || !process.env.MAIL_PASS) {
+            throw new Error('Mail configuration is missing. Please check environment variables.');
+        }
+
         const transporter = nodemailer.createTransport({
             host: process.env.MAIL_HOST,
             auth: {
@@ -17,11 +21,16 @@ const mailSender = async (email, title, body) => {
             html: body
         });
 
-        // console.log('Info of sent mail - ', info);
+        console.log('Email sent successfully to:', email);
         return info;
     }
     catch (error) {
-        console.log('Error while sending mail (mailSender) - ', email);
+        console.error('Error while sending mail:', {
+            email,
+            error: error.message,
+            stack: error.stack
+        });
+        throw error; // Propagate error to handle it in the calling function
     }
 }
 

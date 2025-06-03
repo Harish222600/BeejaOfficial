@@ -72,9 +72,12 @@ export function signUp(accountType, firstName, lastName, email, password, confir
       navigate("/login");
     } catch (error) {
       console.log("SIGNUP API ERROR --> ", error);
-      // toast.error(error.response.data.message);
-      toast.error("Invalid OTP");
-      // navigate("/signup")
+      const errorMessage = error.response?.data?.message || "Invalid OTP";
+      toast.error(errorMessage);
+      // Clear the OTP input and stay on verify-email page
+      dispatch(setLoading(false));
+      toast.dismiss(toastId);
+      return;
     }
     dispatch(setLoading(false))
     toast.dismiss(toastId)

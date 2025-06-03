@@ -14,56 +14,67 @@ const { passwordUpdated } = require("../mail/templates/passwordUpdate");
 // ================ SEND-OTP For Email Verification ================
 exports.sendOTP = async (req, res) => {
     try {
-
-        // fetch email from re.body 
+        // fetch email from req.body 
         const { email } = req.body;
 
-        // check user already exist ?
+        if (!email) {
+            return res.status(400).json({
+                success: false,
+                message: 'Email is required'
+            });
+        }
+
+        // check if user already exists
         const checkUserPresent = await User.findOne({ email });
 
-        // if exist then response
         if (checkUserPresent) {
-            console.log('(when otp generate) User alreay registered')
             return res.status(401).json({
                 success: false,
                 message: 'User is Already Registered'
-            })
+            });
         }
 
-        // generate Otp
+        // generate OTP
         const otp = optGenerator.generate(6, {
             upperCaseAlphabets: false,
             lowerCaseAlphabets: false,
             specialChars: false
-        })
-        // console.log('Your otp - ', otp);
-
-        const name = email.split('@')[0].split('.').map(part => part.replace(/\d+/g, '')).join(' ');
-        console.log(name);
-
-        // send otp in mail
-        await mailSender(email, 'OTP Verification Email', otpTemplate(otp, name));
-
-        // create an entry for otp in DB
-        const otpBody = await OTP.create({ email, otp });
-        // console.log('otpBody - ', otpBody);
-
-
-
-        // return response successfully
-        res.status(200).json({
-            success: true,
-            otp,
-            message: 'Otp sent successfully'
         });
-    }
 
-    catch (error) {
-        console.log('Error while generating Otp - ', error);
-        res.status(200).json({
+        // Extract name from email for personalization
+        const name = email.split('@')[0].split('.').map(part => part.replace(/\d+/g, '')).join(' ');
+        
+        try {
+            // send OTP via email
+            const mailResponse = await mailSender(
+                email,
+                'Email Verification OTP',
+                otpTemplate(otp, name)
+            );
+
+            console.log('Mail sent successfully:', mailResponse);
+        } catch (error) {
+            console.error('Error sending email:', error);
+            return res.status(500).json({
+                success: false,
+                message: 'Error sending verification email',
+                error: error.message
+            });
+        }
+
+        // create an entry for OTP in DB
+        const otpBody = await OTP.create({ email, otp });
+
+        return res.status(200).json({
+            success: true,
+            message: 'OTP sent successfully'
+        });
+    } catch (error) {
+        console.error('Error in sendOTP:', error);
+        return res.status(500).json({
             success: false,
-            message: 'Error while generating Otp',
-            error: error.mesage
+            message: 'Error while generating OTP',
+            error: error.message
         });
     }
 }
@@ -186,6 +197,14 @@ exports.login = async (req, res) => {
             return res.status(401).json({
                 success: false,
                 message: 'You are not registered with us'
+            });
+        }
+
+        // Check if user is active
+        if (!user.active) {
+            return res.status(403).json({
+                success: false,
+                message: 'Your account has been deactivated. Please contact admin.'
             });
         }
 
