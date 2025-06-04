@@ -9,14 +9,15 @@ import Footer from "../components/common/Footer"
 import ContactFormSection from "../components/core/AboutPage/ContactFormSection"
 import LearningGrid from "../components/core/AboutPage/LearningGrid"
 import Quote from "../components/core/AboutPage/Quote"
-import StatsComponenet from "../components/core/AboutPage/Stats"
+
 import HighlightText from "../components/core/HomePage/HighlightText"
 import Img from "../components/common/Img"
 import ReviewSlider from './../components/common/ReviewSlider';
 
 import { motion } from 'framer-motion';
 import { fadeIn } from "../components/common/motionFrameVarients"
-
+import TeamCard from "./Card/components/TeamCard"
+// import TeamCard from "./Card/components/TeamCard"
 
 
 
@@ -110,6 +111,32 @@ const About = () => {
             </motion.div>
           </div>
 
+          <div>
+            <motion.div
+              variants={fadeIn('right', 0.1)}
+              initial='hidden'
+              whileInView={'show'}
+              viewport={{ once: false, amount: 0.1 }}
+              className='text-center text-3xl lg:text-4xl font-semibold mt-7'
+              style={{color:'white'}}
+            >
+              Meet With Our 
+              <HighlightText text={"Team Members"} />
+            </motion.div>
+            <motion.div
+              variants={fadeIn('left', 0.1)}
+              initial='hidden'
+              whileInView={'show'}
+              viewport={{ once: false, amount: 0.1 }}
+            >
+              <TeamCard />
+
+            </motion.div>
+            <div style={{ height: '.5px', backgroundColor: 'gray', width: '100%' }} />
+
+            
+          </div>
+
           <div className="flex flex-col items-center lg:gap-10 lg:flex-row justify-between">
             <div className="my-24 flex lg:w-[40%] flex-col gap-10">
               <h1 className="bg-gradient-to-b from-[#FF512F] to-[#F09819] bg-clip-text text-4xl font-semibold text-transparent lg:w-[70%] ">
@@ -125,11 +152,11 @@ const About = () => {
                 Our Mission
               </h1>
               <p className="text-base font-medium text-richblack-300 lg:w-[95%]">
-                At Beeja Academy, we are dedicated to fostering a culture of continuous learning. 
-                Our mission is to empower individuals by providing accessible, 
-                high-quality education that evolves with the ever-changing demands of the industry. 
-                Through innovative teaching methods, real-world projects, and a supportive community, 
-                we aim to transform learners into industry-ready professionals equipped with the skills and 
+                At Beeja Academy, we are dedicated to fostering a culture of continuous learning.
+                Our mission is to empower individuals by providing accessible,
+                high-quality education that evolves with the ever-changing demands of the industry.
+                Through innovative teaching methods, real-world projects, and a supportive community,
+                we aim to transform learners into industry-ready professionals equipped with the skills and
                 confidence to excel in their careers.
               </p>
             </div>
@@ -137,7 +164,7 @@ const About = () => {
         </div>
       </section>
 
-      <StatsComponenet />
+
 
       <section className="mx-auto mt-20 flex w-11/12 max-w-maxContent flex-col justify-between gap-10 text-white">
         <LearningGrid />

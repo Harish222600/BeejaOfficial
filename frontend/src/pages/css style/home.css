@@ -26,7 +26,6 @@
 
 .c-logo{
     width:150px;
-
 }
 
 .learner-info-container{
@@ -102,3 +101,12 @@
 .increase-count .text{
     font-size: 15px;
 }
+
+
+.certification-logo-container:hover{
+    transform: scale(1.1) translate(0px, -9px);
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease , background-color 0.3s ease;
+    background-color: rgba(101, 101, 101, 0.375);
+}
+

@@ -18,6 +18,8 @@
     "concurrently": "^8.2.1",
     "copy-to-clipboard": "^3.3.3",
     "framer-motion": "^10.16.4",
+    "jquery": "^3.7.1",
+    "owl.carousel": "^2.3.4",
     "razorpay": "^2.9.2",
     "react": "^18.2.0",
     "react-chartjs-2": "^5.2.0",
@@ -29,12 +31,13 @@
     "react-lazy-load-image-component": "^1.6.0",
     "react-markdown": "^9.0.0",
     "react-otp-input": "^3.0.4",
+    "react-owl-carousel": "^2.3.3",
     "react-rating-stars-component": "^2.2.0",
     "react-redux": "^8.1.2",
     "react-router-dom": "^6.16.0",
     "react-super-responsive-table": "^5.2.2",
     "react-type-animation": "^3.1.0",
-    "swiper": "^11.0.4",
+    "swiper": "^11.2.8",
     "video-react": "^0.16.0"
   },
   "devDependencies": {
