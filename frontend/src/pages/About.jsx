@@ -17,7 +17,7 @@ import ReviewSlider from './../components/common/ReviewSlider';
 import { motion } from 'framer-motion';
 import { fadeIn } from "../components/common/motionFrameVarients"
 import TeamCard from "./Card/components/TeamCard"
-// import TeamCard from "./Card/components/TeamCard"
+import FAQSection from "../components/core/AboutPage/FAQSection"
 
 
 
@@ -165,6 +165,9 @@ const About = () => {
       </section>
 
 
+
+      {/* FAQ Section */}
+      <FAQSection />
 
       <section className="mx-auto mt-20 flex w-11/12 max-w-maxContent flex-col justify-between gap-10 text-white">
         <LearningGrid />
