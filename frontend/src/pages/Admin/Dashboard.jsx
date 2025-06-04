@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { FaUsers, FaBookOpen, FaChartBar } from 'react-icons/fa';
+import { FaUsers, FaBookOpen, FaChartBar, FaGraduationCap } from 'react-icons/fa';
 import { MdSettings } from 'react-icons/md';
 
 import UserManagement from './components/UserManagement';
 import CourseManagement from './components/CourseManagement';
 import Analytics from './components/Analytics';
 import Settings from './components/Settings';
+import CourseTypeManager from '../../components/core/Dashboard/Admin/CourseTypeManager';
+import CourseAccessRequests from '../../components/core/Dashboard/Admin/CourseAccessRequests';
 
 const AdminDashboard = () => {
   const { user } = useSelector((state) => state.profile);
@@ -18,6 +20,8 @@ const AdminDashboard = () => {
   const sidebarItems = [
     { id: 'users', label: 'Users', icon: <FaUsers className="w-5 h-5" /> },
     { id: 'courses', label: 'Courses', icon: <FaBookOpen className="w-5 h-5" /> },
+    { id: 'courseTypes', label: 'Course Types', icon: <FaGraduationCap className="w-5 h-5" /> },
+    { id: 'accessRequests', label: 'Access Requests', icon: <FaUsers className="w-5 h-5" /> },
     { id: 'analytics', label: 'Analytics', icon: <FaChartBar className="w-5 h-5" /> },
     { id: 'settings', label: 'Settings', icon: <MdSettings className="w-5 h-5" /> },
   ];
@@ -60,8 +64,10 @@ const AdminDashboard = () => {
           <div className="bg-richblack-800 rounded-lg p-6">
             {activeTab === 'users' && <UserManagement />}
             {activeTab === 'courses' && <CourseManagement />}
-{activeTab === 'analytics' && <Analytics />}
-{activeTab === 'settings' && <Settings />}
+            {activeTab === 'courseTypes' && <CourseTypeManager />}
+            {activeTab === 'accessRequests' && <CourseAccessRequests />}
+            {activeTab === 'analytics' && <Analytics />}
+            {activeTab === 'settings' && <Settings />}
           </div>
         </div>
       </div>

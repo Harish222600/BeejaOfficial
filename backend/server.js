@@ -19,6 +19,7 @@ const profileRoutes = require('./routes/profile');
 const paymentRoutes = require('./routes/payments');
 const courseRoutes = require('./routes/course');
 const adminRoutes = require('./routes/admin');
+const courseAccessRoutes = require('./routes/courseAccess');
 
 
 // Handle empty DELETE request bodies
@@ -83,6 +84,7 @@ app.use('/api/v1/profile', profileRoutes);
 app.use('/api/v1/payment', paymentRoutes);
 app.use('/api/v1/course', courseRoutes);
 app.use('/api/v1/admin', adminRoutes);
+app.use('/api/v1/course-access', courseAccessRoutes);
 
 
 

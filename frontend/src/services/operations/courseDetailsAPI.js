@@ -176,6 +176,7 @@ export const createSubSection = async (data, token) => {
   try {
     const response = await apiConnector("POST", CREATE_SUBSECTION_API, data, {
       Authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data",
     })
     console.log("CREATE SUB-SECTION API RESPONSE............", response)
 
@@ -228,6 +229,7 @@ export const updateSubSection = async (data, token) => {
   try {
     const response = await apiConnector("POST", UPDATE_SUBSECTION_API, data, {
       Authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data",
     })
     console.log("UPDATE SUB-SECTION API RESPONSE............", response)
 

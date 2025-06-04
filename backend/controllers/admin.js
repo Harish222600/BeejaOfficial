@@ -287,6 +287,63 @@ exports.deleteCourse = async (req, res) => {
     }
 };
 
+// ================ SET COURSE TYPE (ADMIN) ================
+exports.setCourseType = async (req, res) => {
+    try {
+        const { courseId } = req.params;
+        const { courseType } = req.body; // 'Paid' or 'Free'
+
+        if (!['Paid', 'Free'].includes(courseType)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid course type. Use "Paid" or "Free"'
+            });
+        }
+
+        const course = await Course.findById(courseId);
+        if (!course) {
+            return res.status(404).json({
+                success: false,
+                message: 'Course not found'
+            });
+        }
+
+        // Store original price if setting to free for the first time
+        if (courseType === 'Free' && !course.originalPrice) {
+            course.originalPrice = course.price;
+        }
+
+        // Update course type and admin settings
+        course.courseType = courseType;
+        course.adminSetFree = courseType === 'Free';
+
+        // If setting back to paid, restore original price
+        if (courseType === 'Paid' && course.originalPrice) {
+            course.price = course.originalPrice;
+        }
+
+        await course.save();
+
+        const updatedCourse = await Course.findById(courseId)
+            .populate('instructor', 'firstName lastName email')
+            .populate('category', 'name');
+
+        return res.status(200).json({
+            success: true,
+            message: `Course set as ${courseType.toLowerCase()} successfully`,
+            data: updatedCourse
+        });
+
+    } catch (error) {
+        console.error('Error setting course type:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Error setting course type',
+            error: error.message
+        });
+    }
+};
+
 // ================ GET ANALYTICS DATA ================
 exports.getAnalytics = async (req, res) => {
     try {
@@ -298,12 +355,18 @@ exports.getAnalytics = async (req, res) => {
         const totalCourses = await Course.countDocuments();
         const publishedCourses = await Course.countDocuments({ status: 'Published' });
         const draftCourses = await Course.countDocuments({ status: 'Draft' });
+        const freeCourses = await Course.countDocuments({ courseType: 'Free' });
+        const paidCourses = await Course.countDocuments({ courseType: 'Paid' });
 
         const thirtyDaysAgo = new Date();
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
         const recentRegistrations = await User.countDocuments({
             createdAt: { $gte: thirtyDaysAgo }
         });
+
+        // Get pending access requests count
+        const CourseAccessRequest = require('../models/courseAccessRequest');
+        const pendingRequests = await CourseAccessRequest.countDocuments({ status: 'Pending' });
 
         return res.status(200).json({
             success: true,
@@ -318,7 +381,12 @@ exports.getAnalytics = async (req, res) => {
                 courses: {
                     total: totalCourses,
                     published: publishedCourses,
-                    draft: draftCourses
+                    draft: draftCourses,
+                    free: freeCourses,
+                    paid: paidCourses
+                },
+                requests: {
+                    pendingAccessRequests: pendingRequests
                 }
             },
             message: 'Analytics data fetched successfully'

@@ -12,7 +12,8 @@ const {
     deleteCourse,
     getAnalytics,
     toggleUserStatus,
-    toggleCourseVisibility
+    toggleCourseVisibility,
+    setCourseType
 } = require('../controllers/admin');
 
 // Import middleware
@@ -30,6 +31,7 @@ router.get('/courses', auth, isAdmin, getAllCourses);
 router.put('/courses/:courseId/approve', auth, isAdmin, approveCourse);
 router.delete('/courses/:courseId', auth, isAdmin, deleteCourse);
 router.put('/courses/:courseId/toggle-visibility', auth, isAdmin, toggleCourseVisibility);
+router.put('/courses/:courseId/set-type', auth, isAdmin, setCourseType);
 
 // ================ ANALYTICS ROUTES ================
 router.get('/analytics', auth, isAdmin, getAnalytics);

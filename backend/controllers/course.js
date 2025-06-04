@@ -61,6 +61,9 @@ exports.createCourse = async (req, res) => {
         const newCourse = await Course.create({
             courseName, courseDescription, instructor: instructorId, whatYouWillLearn, price, category: categoryDetails._id,
             tag, status, instructions, thumbnail: thumbnailDetails.secure_url, createdAt: Date.now(),
+            courseType: 'Paid', // Default to Paid for new courses
+            adminSetFree: false,
+            originalPrice: price
         });
 
         // add course id to instructor courses list, this is bcoz - it will show all created courses by instructor 

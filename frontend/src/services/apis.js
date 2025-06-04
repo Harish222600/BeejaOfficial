@@ -84,7 +84,22 @@ export const adminEndpoints = {
   APPROVE_COURSE_API: BASE_URL + "/api/v1/admin/courses/:courseId/approve",
   DELETE_COURSE_API: BASE_URL + "/api/v1/admin/courses/:courseId",
   TOGGLE_COURSE_VISIBILITY_API: BASE_URL + "/api/v1/admin/courses/:courseId/toggle-visibility",
+  SET_COURSE_TYPE_API: BASE_URL + "/api/v1/admin/courses/:courseId/set-type",
 
   // Analytics
   GET_ANALYTICS_API: BASE_URL + "/api/v1/admin/analytics",
+}
+
+// COURSE ACCESS ENDPOINTS
+export const courseAccessEndpoints = {
+  // Public
+  GET_FREE_COURSES_API: BASE_URL + "/api/v1/course-access/free-courses",
+  
+  // Student
+  REQUEST_COURSE_ACCESS_API: BASE_URL + "/api/v1/course-access/request-access",
+  GET_USER_ACCESS_REQUESTS_API: BASE_URL + "/api/v1/course-access/my-requests",
+  
+  // Admin
+  GET_ALL_ACCESS_REQUESTS_API: BASE_URL + "/api/v1/course-access/requests",
+  HANDLE_ACCESS_REQUEST_API: BASE_URL + "/api/v1/course-access/requests/:requestId",
 }

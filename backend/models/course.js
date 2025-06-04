@@ -8,6 +8,18 @@ const courseSchema = new mongoose.Schema({
         type: Boolean,
         default: true,
     },
+    courseType: {
+        type: String,
+        enum: ['Paid', 'Free'],
+        default: 'Paid'
+    },
+    adminSetFree: {
+        type: Boolean,
+        default: false
+    },
+    originalPrice: {
+        type: Number
+    },
     courseDescription: {
         type: String
     },

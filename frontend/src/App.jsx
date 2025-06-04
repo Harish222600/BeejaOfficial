@@ -16,6 +16,7 @@ import Contact from "./pages/Contact";
 import PageNotFound from "./pages/PageNotFound";
 import CourseDetails from './pages/CourseDetails';
 import Catalog from './pages/Catalog';
+import FreeCourses from './components/core/Catalog/FreeCourses';
 
 import Navbar from "./components/common/Navbar"
 
@@ -33,6 +34,7 @@ import Instructor from './components/core/Dashboard/Instructor';
 import Cart from "./components/core/Dashboard/Cart/Cart";
 import EnrolledCourses from "./components/core/Dashboard/EnrolledCourses";
 import AddCourse from "./components/core/Dashboard/AddCourse/AddCourse";
+import AccessRequests from "./components/core/Dashboard/AccessRequests";
 
 import ViewCourse from "./pages/ViewCourse";
 import VideoDetails from './components/core/ViewCourse/VideoDetails';
@@ -93,6 +95,7 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/about" element={<About />} />
         <Route path="catalog/:catalogName" element={<Catalog />} />
+        <Route path="free-courses" element={<FreeCourses />} />
         <Route path="courses/:courseId" element={<CourseDetails />} />
 
         {/* Open Route - for Only Non Logged in User */}
@@ -156,6 +159,7 @@ function App() {
             <>
               <Route path="dashboard/cart" element={<Cart />} />
               <Route path="dashboard/enrolled-courses" element={<EnrolledCourses />} />
+              <Route path="dashboard/access-requests" element={<AccessRequests />} />
             </>
           )}
 

@@ -1,330 +1,319 @@
-import { apiConnector } from "../apiConnector";
-import { adminEndpoints } from "../apis";
-import { toast } from "react-hot-toast";
+import { toast } from "react-hot-toast"
+import { apiConnector } from "../apiConnector"
+import { adminEndpoints } from "../apis"
 
 const {
   GET_ALL_USERS_API,
   CREATE_USER_API,
   UPDATE_USER_API,
   DELETE_USER_API,
+  TOGGLE_USER_STATUS_API,
   GET_ALL_COURSES_API,
   APPROVE_COURSE_API,
   DELETE_COURSE_API,
-  GET_ANALYTICS_API,
-  TOGGLE_USER_STATUS_API,
   TOGGLE_COURSE_VISIBILITY_API,
-} = adminEndpoints;
+  SET_COURSE_TYPE_API,
+  GET_ANALYTICS_API,
+} = adminEndpoints
 
-// ================ TOGGLE FUNCTIONS ================
-export const toggleUserStatus = async (userId, token) => {
-  const toastId = toast.loading("Updating user status...");
+// ================ Set Course Type ================
+export const setCourseType = async (courseId, courseType, token) => {
+  const toastId = toast.loading("Updating course type...")
+  let result = null
+
   try {
-    console.log("Toggle User Status API Call:", {
-      method: "PUT",
-      url: TOGGLE_USER_STATUS_API.replace(":userId", userId),
-      token: token ? "Token exists" : "No token"
-    });
-
-    const response = await apiConnector(
-      "PUT",
-      TOGGLE_USER_STATUS_API.replace(":userId", userId),
-      {},
-      {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    );
-
-    console.log("Toggle User Status Response:", response);
+    const url = SET_COURSE_TYPE_API.replace(':courseId', courseId)
+    
+    const response = await apiConnector("PUT", url, { courseType }, {
+      Authorization: `Bearer ${token}`,
+    })
+    
+    console.log("SET_COURSE_TYPE_API RESPONSE............", response)
 
     if (!response?.data?.success) {
-      throw new Error("Could not update user status");
+      throw new Error("Could Not Update Course Type")
     }
 
-    toast.success(response.data.message);
-    return true;
+    toast.success("Course type updated successfully")
+    result = response?.data?.data
   } catch (error) {
-    console.error("TOGGLE_USER_STATUS_API ERROR:", {
-      error: error.message,
-      response: error.response?.data,
-      status: error.response?.status
-    });
-    toast.error(error.response?.data?.message || "Could not update user status");
-    throw error;
-  } finally {
-    toast.dismiss(toastId);
+    console.log("SET_COURSE_TYPE_API ERROR............", error)
+    toast.error(error.message)
   }
-};
+  
+  toast.dismiss(toastId)
+  return result
+}
 
-export const toggleCourseVisibility = async (courseId, token) => {
-  const toastId = toast.loading("Updating course visibility...");
-  try {
-    const response = await apiConnector(
-      "PUT",
-      TOGGLE_COURSE_VISIBILITY_API.replace(":courseId", courseId),
-      {},
-      {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    );
-
-    if (!response?.data?.success) {
-      throw new Error("Could not update course visibility");
-    }
-
-    toast.success(response.data.message);
-    return true;
-  } catch (error) {
-    console.error("TOGGLE_COURSE_VISIBILITY_API ERROR:", error);
-    toast.error(error.response?.data?.message || "Could not update course visibility");
-    throw error;
-  } finally {
-    toast.dismiss(toastId);
-  }
-};
-
-// ================ USER MANAGEMENT ================
+// ================ Get All Users ================
 export const getAllUsers = async (token) => {
-  const toastId = toast.loading("Loading users...");
+  let result = []
+  const toastId = toast.loading("Loading...")
+
   try {
     const response = await apiConnector("GET", GET_ALL_USERS_API, null, {
       Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    });
-
+    })
+    
     if (!response?.data?.success) {
-      throw new Error("Could not fetch users");
+      throw new Error("Could Not Fetch Users")
     }
-
-    toast.success("Users fetched successfully");
-    return response.data.users;
+    
+    result = response?.data?.users
   } catch (error) {
-    console.log("GET_ALL_USERS_API ERROR............", error);
-    toast.error(error.response?.data?.message || "Could not fetch users");
-    return [];
-  } finally {
-    toast.dismiss(toastId);
+    console.log("GET_ALL_USERS_API ERROR............", error)
+    toast.error(error.message)
   }
-};
+  
+  toast.dismiss(toastId)
+  return result
+}
 
-export const createUser = async (userData, token) => {
-  const toastId = toast.loading("Creating user...");
+// ================ Create User ================
+export const createUser = async (data, token) => {
+  const toastId = toast.loading("Creating user...")
+  let result = null
+
   try {
-    const response = await apiConnector("POST", CREATE_USER_API, userData, {
+    const response = await apiConnector("POST", CREATE_USER_API, data, {
       Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    });
+    })
+    
+    console.log("CREATE_USER_API RESPONSE............", response)
 
     if (!response?.data?.success) {
-      throw new Error("Could not create user");
+      throw new Error("Could Not Create User")
     }
 
-    toast.success("User created successfully");
-    return response.data.user;
+    toast.success("User created successfully")
+    result = response?.data?.user
   } catch (error) {
-    console.log("CREATE_USER_API ERROR............", error);
-    toast.error(error.response?.data?.message || "Could not create user");
-    throw error;
-  } finally {
-    toast.dismiss(toastId);
+    console.log("CREATE_USER_API ERROR............", error)
+    toast.error(error.message)
   }
-};
+  
+  toast.dismiss(toastId)
+  return result
+}
 
-export const updateUser = async (userId, userData, token) => {
-  const toastId = toast.loading("Updating user...");
+// ================ Update User ================
+export const updateUser = async (userId, data, token) => {
+  const toastId = toast.loading("Updating user...")
+  let result = null
+
   try {
-    const response = await apiConnector(
-      "PUT",
-      UPDATE_USER_API.replace(":userId", userId),
-      userData,
-      {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    );
+    const url = UPDATE_USER_API.replace(':userId', userId)
+    
+    const response = await apiConnector("PUT", url, data, {
+      Authorization: `Bearer ${token}`,
+    })
+    
+    console.log("UPDATE_USER_API RESPONSE............", response)
 
     if (!response?.data?.success) {
-      throw new Error("Could not update user");
+      throw new Error("Could Not Update User")
     }
 
-    toast.success("User updated successfully");
-    return response.data.user;
+    toast.success("User updated successfully")
+    result = response?.data?.user
   } catch (error) {
-    console.log("UPDATE_USER_API ERROR............", error);
-    toast.error(error.response?.data?.message || "Could not update user");
-    throw error;
-  } finally {
-    toast.dismiss(toastId);
+    console.log("UPDATE_USER_API ERROR............", error)
+    toast.error(error.message)
   }
-};
+  
+  toast.dismiss(toastId)
+  return result
+}
 
+// ================ Delete User ================
 export const deleteUser = async (userId, token) => {
-  const toastId = toast.loading("Deleting user...");
+  const toastId = toast.loading("Deleting user...")
+  let result = false
+
   try {
-    // Validate inputs
-    if (!userId || !token) {
-      throw new Error("Missing required parameters");
-    }
-
-    // Log the request details
-    console.log('Delete User Request:', {
-      userId,
-      tokenExists: !!token,
-      url: DELETE_USER_API.replace(":userId", userId)
-    });
-
-    // Prepare headers with token
-    const headers = {
+    const url = DELETE_USER_API.replace(':userId', userId)
+    
+    const response = await apiConnector("DELETE", url, null, {
       Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    };
+    })
+    
+    console.log("DELETE_USER_API RESPONSE............", response)
 
-    // Make the API call
-    const response = await apiConnector(
-      "DELETE",
-      DELETE_USER_API.replace(":userId", userId),
-      {},  // Send empty object instead of undefined
-      headers
-    );
-
-    // Log the response
-    console.log('Delete User Response:', {
-      status: response.status,
-      success: response.data?.success,
-      message: response.data?.message
-    });
-
-    // Check for successful response
     if (!response?.data?.success) {
-      throw new Error(response?.data?.message || "Could not delete user");
+      throw new Error("Could Not Delete User")
     }
 
-    // Show success message
-    toast.success("User deleted successfully");
-    return true;
-
+    toast.success("User deleted successfully")
+    result = true
   } catch (error) {
-    // Enhanced error logging
-    console.error("Delete User Error:", {
-      name: error.name,
-      message: error.message,
-      response: {
-        status: error.response?.status,
-        data: error.response?.data,
-        headers: error.response?.headers
-      }
-    });
-
-    // Show error message to user
-    toast.error(error.response?.data?.message || "Could not delete user");
-    throw error;
-
-  } finally {
-    toast.dismiss(toastId);
+    console.log("DELETE_USER_API ERROR............", error)
+    toast.error(error.message)
   }
-};
+  
+  toast.dismiss(toastId)
+  return result
+}
 
-// ================ COURSE MANAGEMENT ================
+// ================ Toggle User Status ================
+export const toggleUserStatus = async (userId, token) => {
+  const toastId = toast.loading("Updating user status...")
+  let result = null
+
+  try {
+    const url = TOGGLE_USER_STATUS_API.replace(':userId', userId)
+    
+    const response = await apiConnector("PUT", url, null, {
+      Authorization: `Bearer ${token}`,
+    })
+    
+    console.log("TOGGLE_USER_STATUS_API RESPONSE............", response)
+
+    if (!response?.data?.success) {
+      throw new Error("Could Not Update User Status")
+    }
+
+    toast.success("User status updated successfully")
+    result = response?.data?.user
+  } catch (error) {
+    console.log("TOGGLE_USER_STATUS_API ERROR............", error)
+    toast.error(error.message)
+  }
+  
+  toast.dismiss(toastId)
+  return result
+}
+
+// ================ Get All Courses ================
 export const getAllCourses = async (token) => {
-  const toastId = toast.loading("Loading courses...");
+  let result = []
+  const toastId = toast.loading("Loading...")
+
   try {
     const response = await apiConnector("GET", GET_ALL_COURSES_API, null, {
       Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    });
-
+    })
+    
     if (!response?.data?.success) {
-      throw new Error("Could not fetch courses");
+      throw new Error("Could Not Fetch Courses")
     }
-
-    toast.success("Courses fetched successfully");
-    return response.data.courses;
+    
+    result = response?.data?.courses
   } catch (error) {
-    console.log("GET_ALL_COURSES_API ERROR............", error);
-    toast.error(error.response?.data?.message || "Could not fetch courses");
-    return [];
-  } finally {
-    toast.dismiss(toastId);
+    console.log("GET_ALL_COURSES_API ERROR............", error)
+    toast.error(error.message)
   }
-};
+  
+  toast.dismiss(toastId)
+  return result
+}
 
+// ================ Approve Course ================
 export const approveCourse = async (courseId, token) => {
-  const toastId = toast.loading("Approving course...");
+  const toastId = toast.loading("Approving course...")
+  let result = null
+
   try {
-    const response = await apiConnector(
-      "PUT",
-      APPROVE_COURSE_API.replace(":courseId", courseId),
-      null,
-      {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    );
+    const url = APPROVE_COURSE_API.replace(':courseId', courseId)
+    
+    const response = await apiConnector("PUT", url, null, {
+      Authorization: `Bearer ${token}`,
+    })
+    
+    console.log("APPROVE_COURSE_API RESPONSE............", response)
 
     if (!response?.data?.success) {
-      throw new Error("Could not approve course");
+      throw new Error("Could Not Approve Course")
     }
 
-    toast.success("Course approved successfully");
-    return response.data.course;
+    toast.success("Course approved successfully")
+    result = response?.data?.course
   } catch (error) {
-    console.log("APPROVE_COURSE_API ERROR............", error);
-    toast.error(error.response?.data?.message || "Could not approve course");
-    throw error;
-  } finally {
-    toast.dismiss(toastId);
+    console.log("APPROVE_COURSE_API ERROR............", error)
+    toast.error(error.message)
   }
-};
+  
+  toast.dismiss(toastId)
+  return result
+}
 
+// ================ Delete Course ================
 export const deleteCourse = async (courseId, token) => {
-  const toastId = toast.loading("Deleting course...");
+  const toastId = toast.loading("Deleting course...")
+  let result = false
+
   try {
-    const response = await apiConnector(
-      "DELETE",
-      DELETE_COURSE_API.replace(":courseId", courseId),
-      {},  // Empty object as body
-      {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    );
+    const url = DELETE_COURSE_API.replace(':courseId', courseId)
+    
+    const response = await apiConnector("DELETE", url, null, {
+      Authorization: `Bearer ${token}`,
+    })
+    
+    console.log("DELETE_COURSE_API RESPONSE............", response)
 
     if (!response?.data?.success) {
-      throw new Error(response?.data?.message || "Could not delete course");
+      throw new Error("Could Not Delete Course")
     }
 
-    toast.success("Course deleted successfully");
-    return true;
+    toast.success("Course deleted successfully")
+    result = true
   } catch (error) {
-    console.error("DELETE_COURSE_API ERROR:", error);
-    toast.error(error.response?.data?.message || "Could not delete course");
-    throw error;
-  } finally {
-    toast.dismiss(toastId);
+    console.log("DELETE_COURSE_API ERROR............", error)
+    toast.error(error.message)
   }
-};
+  
+  toast.dismiss(toastId)
+  return result
+}
 
-// ================ ANALYTICS ================
+// ================ Toggle Course Visibility ================
+export const toggleCourseVisibility = async (courseId, token) => {
+  const toastId = toast.loading("Updating course visibility...")
+  let result = null
+
+  try {
+    const url = TOGGLE_COURSE_VISIBILITY_API.replace(':courseId', courseId)
+    
+    const response = await apiConnector("PUT", url, null, {
+      Authorization: `Bearer ${token}`,
+    })
+    
+    console.log("TOGGLE_COURSE_VISIBILITY_API RESPONSE............", response)
+
+    if (!response?.data?.success) {
+      throw new Error("Could Not Update Course Visibility")
+    }
+
+    toast.success("Course visibility updated successfully")
+    result = response?.data?.course
+  } catch (error) {
+    console.log("TOGGLE_COURSE_VISIBILITY_API ERROR............", error)
+    toast.error(error.message)
+  }
+  
+  toast.dismiss(toastId)
+  return result
+}
+
+// ================ Get Analytics ================
 export const getAnalytics = async (token) => {
-  const toastId = toast.loading("Loading analytics...");
+  let result = null
+  const toastId = toast.loading("Loading analytics...")
+
   try {
     const response = await apiConnector("GET", GET_ANALYTICS_API, null, {
       Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    });
-
+    })
+    
     if (!response?.data?.success) {
-      throw new Error("Could not fetch analytics");
+      throw new Error("Could Not Fetch Analytics")
     }
-
-    toast.success("Analytics fetched successfully");
-    return response.data.analytics;
+    
+    result = response?.data?.analytics
   } catch (error) {
-    console.log("GET_ANALYTICS_API ERROR............", error);
-    toast.error(error.response?.data?.message || "Could not fetch analytics");
-    return null;
-  } finally {
-    toast.dismiss(toastId);
+    console.log("GET_ANALYTICS_API ERROR............", error)
+    toast.error(error.message)
   }
-};
+  
+  toast.dismiss(toastId)
+  return result
+}

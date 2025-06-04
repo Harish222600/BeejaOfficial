@@ -168,6 +168,19 @@ const Navbar = () => {
             </li>
           ))}
 
+          {/* Free Courses Link */}
+          <li>
+            <Link to="/free-courses">
+              <p className={`${
+                matchRoute("/free-courses")
+                  ? "bg-yellow-25 text-black"
+                  : "text-richblack-25"
+              } rounded-xl p-1 px-3`}>
+                Free Courses
+              </p>
+            </Link>
+          </li>
+
           {/* Services Dropdown */}
           <li className="relative group flex cursor-pointer items-center gap-1 rounded-xl p-1 px-3 text-richblack-25 hover:bg-richblack-50">
             <span>Services</span>
