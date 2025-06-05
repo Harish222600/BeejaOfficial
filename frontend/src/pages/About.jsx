@@ -18,9 +18,7 @@ import { motion } from 'framer-motion';
 import { fadeIn } from "../components/common/motionFrameVarients"
 import TeamCard from "./Card/components/TeamCard"
 import FAQSection from "../components/core/AboutPage/FAQSection"
-
-
-
+import BenefitsForEmployers from "../components/core/AboutPage/BenefitsForEmployers"
 
 const About = () => {
   return (
@@ -133,9 +131,17 @@ const About = () => {
 
             </motion.div>
             <div style={{ height: '.5px', backgroundColor: 'gray', width: '100%' }} />
-
-            
           </div>
+
+          {/* Benefits for Employers Section */}
+          <motion.div
+            variants={fadeIn('up', 0.1)}
+            initial='hidden'
+            whileInView={'show'}
+            viewport={{ once: false, amount: 0.1 }}
+          >
+            <BenefitsForEmployers />
+          </motion.div>
 
           <div className="flex flex-col items-center lg:gap-10 lg:flex-row justify-between">
             <div className="my-24 flex lg:w-[40%] flex-col gap-10">
