@@ -2,7 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { fadeIn, bounce, scaleUp } from "../components/common/motionFrameVarients";
 import HighlightText from "../components/core/HomePage/HighlightText";
-import Footer from "../components/common/Footer";
+import ImprovedFooter from "../components/common/ImprovedFooter";
 import { Link } from "react-router-dom";
 import { FaUsers, FaRocket, FaCertificate, FaHandshake, FaChartLine, FaClock } from "react-icons/fa";
 
@@ -267,7 +267,7 @@ const InstituteService = () => {
         </motion.div>
       </section>
 
-      <Footer />
+      <ImprovedFooter />
     </div>
   );
 };

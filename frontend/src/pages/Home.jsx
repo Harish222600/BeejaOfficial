@@ -10,7 +10,7 @@ import CodeBlocks from "../components/core/HomePage/CodeBlocks";
 import TimelineSection from '../components/core/HomePage/TimelineSection';
 import LearningLanguageSection from '../components/core/HomePage/LearningLanguageSection';
 import InstructorSection from '../components/core/HomePage/InstructorSection';
-import Footer from '../components/common/Footer';
+import ImprovedFooter from '../components/common/ImprovedFooter';
 import ExploreMore from '../components/core/HomePage/ExploreMore';
 import ReviewSlider from '../components/common/ReviewSlider';
 import Course_Slider from '../components/core/Catalog/Course_Slider';
@@ -296,7 +296,7 @@ const Home = () => {
                 </div>
 
                 {/* Footer */}
-                <Footer />
+                <ImprovedFooter />
             </div>
         </React.Fragment>
     );
