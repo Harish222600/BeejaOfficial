@@ -14,6 +14,7 @@ import Footer from '../components/common/Footer';
 import ExploreMore from '../components/core/HomePage/ExploreMore';
 import ReviewSlider from '../components/common/ReviewSlider';
 import Course_Slider from '../components/core/Catalog/Course_Slider';
+import TeamSlider from '../components/core/HomePage/TeamSlider';
 
 import { getCatalogPageData } from '../services/operations/pageAndComponentData';
 
@@ -274,6 +275,19 @@ const Home = () => {
                         <div className='certification-logo-container'><img className='c-logo' src={Walmart} alt=" img" /></div>
                         <div className='certification-logo-container'><img className='c-logo' src={Sony} alt=" img" /></div>
                     </motion.div>
+
+                    {/* Team Slider Section */}
+                    <motion.div
+                        variants={fadeIn('up', 0.1)}
+                        initial='hidden'
+                        whileInView={'show'}
+                        viewport={{ once: false, amount: 0.1 }}
+                        className='text-center text-3xl lg:text-4xl font-semibold mt-16 mb-8'
+                    >
+                        Meet Our Expert
+                        <HighlightText text={" Team"} />
+                    </motion.div>
+                    <TeamSlider />
 
                     <div className='mx-auto box-content w-full max-w-maxContentTab px- py-12 lg:max-w-maxContent'>
                         <h2 className='text-white mb-6 text-2xl'>Popular Picks for You 🏆</h2>
