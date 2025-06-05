@@ -36,15 +36,12 @@ const socialLinks = [
 ];
 
 const contactInfo = [
-  { icon: FiMail, text: "contact@beeja.com", href: "mailto:contact@beeja.com" },
-  { icon: FiPhone, text: "+1 (555) 123-4567", href: "tel:+15551234567" },
-  { icon: FiMapPin, text: "123 Education St, Learning City, LC 12345", href: "#" },
+  { icon: FiMail, text: "info@beejaacademy.com", href: "mailto:info@beejaacademy.com" },
+  { icon: FiPhone, text: "9150274222", href: "tel:+9150274222" },
+  { icon: FiMapPin, text: "No.2, 2nd Floor, Gokul Arcade Sardar Patel Road, Adyar, Chennai - 600020", href: "https://www.google.com/maps/place/Beeja+Academy/@12.956588,80.23958,905m/data=!3m1!1e3!4m6!3m5!1s0x3a525d17a2d0336b:0x7e844a0c331cb391!8m2!3d12.9578009!4d80.2403847!16s%2Fg%2F11rkx4c5m6?authuser=0&entry=ttu&g_ep=EgoyMDI1MDYwMi4wIKXMDSoASAFQAw%3D%3D" },
 ];
 
 const ImprovedFooter = () => {
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
 
   return (
     <footer className={`${styles.footerContainer} relative bg-gradient-to-br from-richblack-900 via-richblack-800 to-richblack-900 mx-4 sm:mx-6 lg:mx-7 rounded-3xl mb-6 lg:mb-10 overflow-hidden`}>

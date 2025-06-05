@@ -5,6 +5,7 @@ import HighlightText from "../components/core/HomePage/HighlightText";
 import ImprovedFooter from "../components/common/ImprovedFooter";
 import { Link } from "react-router-dom";
 import { FaUsers, FaRocket, FaCertificate, FaHandshake, FaChartLine, FaClock } from "react-icons/fa";
+import BenefitsForEmployers from "../components/core/AboutPage/BenefitsForEmployers";
 
 const InstituteService = () => {
   const services = [
@@ -236,6 +237,15 @@ const InstituteService = () => {
           </motion.div>
         </div>
       </section>
+
+      <motion.div
+            variants={fadeIn('up', 0.1)}
+            initial='hidden'
+            whileInView={'show'}
+            viewport={{ once: false, amount: 0.1 }}
+          >
+            <BenefitsForEmployers />
+          </motion.div>
 
       {/* CTA Section */}
       <section className="mx-auto w-11/12 max-w-maxContent py-20">

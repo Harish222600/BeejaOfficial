@@ -6,7 +6,7 @@ import BannerImage2 from "../assets/Images/aboutus2.webp"
 import BannerImage3 from "../assets/Images/aboutus3.webp"
 
 import ImprovedFooter from "../components/common/ImprovedFooter"
-import ContactFormSection from "../components/core/AboutPage/ContactFormSection"
+// import ContactFormSection from "../components/core/AboutPage/ContactFormSection"
 import LearningGrid from "../components/core/AboutPage/LearningGrid"
 import Quote from "../components/core/AboutPage/Quote"
 
@@ -18,7 +18,7 @@ import { motion } from 'framer-motion';
 import { fadeIn } from "../components/common/motionFrameVarients"
 import TeamCard from "./Card/components/TeamCard"
 import FAQSection from "../components/core/AboutPage/FAQSection"
-import BenefitsForEmployers from "../components/core/AboutPage/BenefitsForEmployers"
+// import BenefitsForEmployers from "../components/core/AboutPage/BenefitsForEmployers"
 
 const About = () => {
   return (
@@ -118,8 +118,9 @@ const About = () => {
               className='text-center text-3xl lg:text-4xl font-semibold mt-7'
               style={{color:'white'}}
             >
-              Meet With Our 
-              <HighlightText text={"Team Members"} />
+              What Our Says
+              <HighlightText text={"Students "} />
+              Says
             </motion.div>
             <motion.div
               variants={fadeIn('left', 0.1)}
@@ -134,14 +135,14 @@ const About = () => {
           </div>
 
           {/* Benefits for Employers Section */}
-          <motion.div
+          {/* <motion.div
             variants={fadeIn('up', 0.1)}
             initial='hidden'
             whileInView={'show'}
             viewport={{ once: false, amount: 0.1 }}
           >
             <BenefitsForEmployers />
-          </motion.div>
+          </motion.div> */}
 
           <div className="flex flex-col items-center lg:gap-10 lg:flex-row justify-between">
             <div className="my-24 flex lg:w-[40%] flex-col gap-10">
