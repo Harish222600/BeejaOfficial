@@ -15,6 +15,7 @@ import ExploreMore from '../components/core/HomePage/ExploreMore';
 import ReviewSlider from '../components/common/ReviewSlider';
 import Course_Slider from '../components/core/Catalog/Course_Slider';
 import TeamSlider from '../components/core/HomePage/TeamSlider';
+import CertificationSection from '../components/core/HomePage/CertificationSection';
 
 import { getCatalogPageData } from '../services/operations/pageAndComponentData';
 
@@ -31,14 +32,6 @@ import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 import { faGraduationCap } from '@fortawesome/free-solid-svg-icons';
 
 
-import Google from "../assets/Images/certification img/Google-certificate-img.png"
-import IBM from "../assets/Images/certification img/ibm-certification-img.png"
-import Meta from "../assets/Images/certification img/meta-certification-img.png"
-import Oracle from "../assets/Images/certification img/oracle-certification-img.png"
-import Walmart from "../assets/Images/certification img/walmart-certification-img.png"
-import Sony from "../assets/Images/certification img/sony-certificate-img.png"
-
-import { width } from '@fortawesome/free-solid-svg-icons/fa0';
 
 const Home = () => {
     const [CatalogPageData, setCatalogPageData] = useState(null);
@@ -226,55 +219,7 @@ const Home = () => {
                         backgroundGradient={"code-block2-grad"}
                     />
 
-                    <motion.div
-                        variants={fadeIn('left', 0.1)}
-                        initial='hidden'
-                        whileInView={'show'}
-                        viewport={{ once: false, amount: 0.1 }}
-                        className='text-center text-3xl lg:text-4xl font-semibold mt-7'
-                    >
-                        We provide
-                        <HighlightText text={"Certification"} />
-                    </motion.div>
-                    {/* <div className='certification-logo'>
-                        <motion.div className='inner-certification'
-                        variants={fadeIn('right', 0.1)}
-                        initial='hidden'
-                        whileInView={'show'}
-                        viewport={{ once: false, amount: 0.1 }}
-                    >
-                        <div className='certification-logo-container'><img className='c-logo' src={Google} alt=" img" /></div>
-                        <div className='certification-logo-container'><img className='c-logo' src={IBM} alt=" img" /></div>
-                        <div className='certification-logo-container'><img className='c-logo' src={Meta} alt=" img" /></div>
-                       
-                    </motion.div>
-                    <motion.div className='inner-certification'
-                        variants={fadeIn('left', 0.1)}
-                        initial='hidden'
-                        whileInView={'show'}
-                        viewport={{ once: false, amount: 0.1 }}
-                    >
-                        <div className='certification-logo-container'><img className='c-logo' src={Oracle} alt=" img" /></div>
-                        <div className='certification-logo-container'><img className='c-logo' src={Walmart} alt=" img" /></div>
-                        <div className='certification-logo-container'><img className='c-logo' src={Sony} alt=" img" /></div>
-                    </motion.div>
-                    </div> */}
-
-
-
-                    <motion.div className='certification-logo'
-                        variants={fadeIn('right', 0.1)}
-                        initial='hidden'
-                        whileInView={'show'}
-                        viewport={{ once: false, amount: 0.1 }}
-                    >
-                        <div className='certification-logo-container'><img className='c-logo' src={Google} alt=" img" /></div>
-                        <div className='certification-logo-container'><img className='c-logo' src={IBM} alt=" img" /></div>
-                        <div className='certification-logo-container'><img className='c-logo' src={Meta} alt=" img" /></div>
-                        <div className='certification-logo-container'><img className='c-logo' src={Oracle} alt=" img" /></div>
-                        <div className='certification-logo-container'><img className='c-logo' src={Walmart} alt=" img" /></div>
-                        <div className='certification-logo-container'><img className='c-logo' src={Sony} alt=" img" /></div>
-                    </motion.div>
+                    <CertificationSection />
 
                     {/* Team Slider Section */}
                     <motion.div
