@@ -11,15 +11,23 @@ exports.createSubSection = async (req, res) => {
         const { title, description, sectionId } = req.body;
 
         // extract video file
-        const videoFile = req.files.video
-        // console.log('videoFile ', videoFile)
+        const videoFile = req.files?.video || req.files?.videoFile;
+        console.log('req.files:', req.files);
+        console.log('videoFile:', videoFile);
 
         // validation
-        if (!title || !description || !videoFile || !sectionId) {
+        if (!title || !description || !sectionId) {
             return res.status(400).json({
                 success: false,
-                message: 'All fields are required'
-            })
+                message: 'Title, description, and sectionId are required'
+            });
+        }
+
+        if (!videoFile) {
+            return res.status(400).json({
+                success: false,
+                message: 'Video file is required'
+            });
         }
 
         // upload video to cloudinary
@@ -27,7 +35,7 @@ exports.createSubSection = async (req, res) => {
 
         // create entry in DB
         const SubSectionDetails = await SubSection.create(
-            { title, timeDuration: videoFileDetails.duration, description, videoUrl: videoFileDetails.secure_url })
+            { title, timeDuration: videoFileDetails.duration, description, videoUrl: videoFileDetails.secure_url });
 
         // link subsection id to section
         // Update the corresponding section with the newly created sub-section
@@ -35,7 +43,7 @@ exports.createSubSection = async (req, res) => {
             { _id: sectionId },
             { $push: { subSection: SubSectionDetails._id } },
             { new: true }
-        ).populate("subSection")
+        ).populate("subSection");
 
         // return response
         res.status(200).json({
@@ -51,7 +59,7 @@ exports.createSubSection = async (req, res) => {
             success: false,
             error: error.message,
             message: 'Error while creating SubSection'
-        })
+        });
     }
 }
 

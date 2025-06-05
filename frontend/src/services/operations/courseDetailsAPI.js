@@ -386,14 +386,19 @@ export const markLectureAsComplete = async (data, token) => {
     })
     console.log("MARK_LECTURE_AS_COMPLETE_API API RESPONSE............", response)
 
-    if (!response.data.message) {
+    if (response.data.message === "Course progress updated") {
+      toast.success("Lecture Completed")
+      result = true
+    } else if (response.data.error) {
       throw new Error(response.data.error)
+    } else if (response.data.success === false) {
+      throw new Error(response.data.message)
+    } else {
+      throw new Error("Unknown error occurred")
     }
-    toast.success("Lecture Completed")
-    result = true
   } catch (error) {
     console.log("MARK_LECTURE_AS_COMPLETE_API API ERROR............", error)
-    toast.error(error.message)
+    toast.error(error.response?.data?.error || error.response?.data?.message || error.message)
     result = false
   }
   toast.dismiss(toastId)

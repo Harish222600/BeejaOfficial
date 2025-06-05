@@ -22,9 +22,12 @@ export default function FreeCourses() {
   const fetchFreeCourses = async () => {
     setLoading(true)
     const result = await getFreeCourses(currentPage)
-    if (result) {
+    if (result?.data) {
       setFreeCourses(result.data)
-      setTotalPages(result.pagination.totalPages)
+      setTotalPages(result.pagination?.totalPages || 1)
+    } else {
+      setFreeCourses([])
+      setTotalPages(1)
     }
     setLoading(false)
   }
@@ -44,14 +47,20 @@ export default function FreeCourses() {
 
     const requestMessage = `I would like to request access to the course "${courseName}".`
     
-    const result = await requestCourseAccess({ courseId, requestMessage }, token)
+    const result = await requestCourseAccess(
+      { 
+        courseId, 
+        requestMessage 
+      }, 
+      `Bearer ${token}`
+    )
     if (result) {
       fetchUserRequests() // Refresh user requests
     }
   }
 
   const getRequestStatus = (courseId) => {
-    const request = userRequests.find(req => req.course._id === courseId)
+    const request = userRequests.find(req => req?.course?._id === courseId)
     return request ? request.status : null
   }
 

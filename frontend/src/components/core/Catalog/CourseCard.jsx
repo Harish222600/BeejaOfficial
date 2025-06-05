@@ -1,30 +1,10 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-hot-toast';
-import { requestCourseAccess } from '../../../services/operations/courseAccessAPI';
 
 export default function CourseCard({ course }) {
   const { user } = useSelector((state) => state.profile);
   const navigate = useNavigate();
-
-  const handleRequestAccess = async () => {
-    if (!user) {
-      toast.error("Please login to request access");
-      navigate("/login");
-      return;
-    }
-
-    try {
-      const response = await requestCourseAccess(course._id);
-      if (response) {
-        toast.success("Access request submitted successfully");
-      }
-    } catch (error) {
-      console.error("Error requesting access:", error);
-      toast.error("Failed to submit access request");
-    }
-  };
 
   return (
     <div className="bg-richblack-800 rounded-lg overflow-hidden hover:scale-[1.03] transition-all duration-200">
@@ -61,15 +41,6 @@ export default function CourseCard({ course }) {
               <p className="text-sm text-yellow-50">₹{course?.price}</p>
             )}
           </div>
-          
-          {course?.courseType === 'Free' && (
-            <button
-              onClick={handleRequestAccess}
-              className="bg-yellow-50 text-richblack-900 px-4 py-2 rounded-md text-sm font-medium hover:bg-yellow-100 transition-all duration-200"
-            >
-              Request Access
-            </button>
-          )}
         </div>
       </div>
     </div>

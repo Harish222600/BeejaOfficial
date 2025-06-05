@@ -4,34 +4,122 @@ const Category = require('../models/category');
 const Section = require('../models/section')
 const SubSection = require('../models/subSection')
 const CourseProgress = require('../models/courseProgress')
+const RatingAndReview = require('../models/ratingAndReview')
 
 const { uploadImageToCloudinary, deleteResourceFromCloudinary } = require('../utils/imageUploader');
 const { convertSecondsToDuration } = require("../utils/secToDuration")
+const mongoose = require('mongoose');
 
+// Helper function to calculate average rating
+const calculateAverageRating = async (courseId) => {
+    try {
+        const result = await RatingAndReview.aggregate([
+            {
+                $match: {
+                    course: new mongoose.Types.ObjectId(courseId),
+                },
+            },
+            {
+                $group: {
+                    _id: null,
+                    averageRating: { 
+                        $avg: "$rating"
+                    },
+                    totalRatings: { $sum: 1 }
+                }
+            }
+        ]);
 
+        if (result.length > 0) {
+            return {
+                averageRating: result[0].averageRating,
+                totalRatings: result[0].totalRatings
+            };
+        }
+        
+        return {
+            averageRating: 0,
+            totalRatings: 0
+        };
+    } catch (error) {
+        console.log('Error calculating average rating:', error);
+        return {
+            averageRating: 0,
+            totalRatings: 0
+        };
+    }
+};
 
 // ================ create new course ================
 exports.createCourse = async (req, res) => {
     try {
+        console.log('=== CREATE COURSE REQUEST ===');
+        console.log('Request body:', req.body);
+        console.log('Request files:', req.files);
+
         // extract data
         let { courseName, courseDescription, whatYouWillLearn, price, category, instructions: _instructions, status, tag: _tag } = req.body;
 
-        // Convert the tag and instructions from stringified Array to Array
-        const tag = JSON.parse(_tag)
-        const instructions = JSON.parse(_instructions)
+        // Handle tag and instructions - they can be either JSON strings or arrays
+        let tag = _tag;
+        let instructions = _instructions;
+        
+        // Handle tag parsing
+        if (_tag) {
+            try {
+                if (typeof _tag === 'string') {
+                    tag = JSON.parse(_tag);
+                }
+            } catch (e) {
+                console.log('Error parsing tag:', e);
+                return res.status(400).json({
+                    success: false,
+                    message: 'Invalid tag format'
+                });
+            }
+        } else {
+            tag = [];
+        }
 
-        // console.log("tag = ", tag)
-        // console.log("instructions = ", instructions)
+        // Handle instructions parsing
+        if (_instructions) {
+            try {
+                if (typeof _instructions === 'string') {
+                    instructions = JSON.parse(_instructions);
+                }
+            } catch (e) {
+                console.log('Error parsing instructions:', e);
+                return res.status(400).json({
+                    success: false,
+                    message: 'Invalid instructions format'
+                });
+            }
+        } else {
+            instructions = [];
+        }
 
         // get thumbnail of course
         const thumbnail = req.files?.thumbnailImage;
 
         // validation
-        if (!courseName || !courseDescription || !whatYouWillLearn || !price
-            || !category || !thumbnail || !instructions.length || !tag.length) {
+        if (!courseName || !courseDescription || !whatYouWillLearn || !price || !category || !thumbnail) {
             return res.status(400).json({
                 success: false,
-                message: 'All Fileds are required'
+                message: 'All required fields must be provided (courseName, courseDescription, whatYouWillLearn, price, category, thumbnail)'
+            });
+        }
+
+        if (!Array.isArray(instructions) || instructions.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'At least one instruction is required'
+            });
+        }
+
+        if (!Array.isArray(tag) || tag.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'At least one tag is required'
             });
         }
 
@@ -39,10 +127,8 @@ exports.createCourse = async (req, res) => {
             status = "Draft";
         }
 
-        // check current user is instructor or not , bcoz only instructor can create 
-        // we have insert user id in req.user , (payload , while auth ) 
+        // check current user is instructor or not
         const instructorId = req.user.id;
-
 
         // check given category is valid or not
         const categoryDetails = await Category.findById(category);
@@ -53,20 +139,35 @@ exports.createCourse = async (req, res) => {
             })
         }
 
-
         // upload thumbnail to cloudinary
         const thumbnailDetails = await uploadImageToCloudinary(thumbnail, process.env.FOLDER_NAME);
 
+        if (!thumbnailDetails || !thumbnailDetails.secure_url) {
+            return res.status(500).json({
+                success: false,
+                message: 'Failed to upload thumbnail image'
+            });
+        }
+
         // create new course - entry in DB
         const newCourse = await Course.create({
-            courseName, courseDescription, instructor: instructorId, whatYouWillLearn, price, category: categoryDetails._id,
-            tag, status, instructions, thumbnail: thumbnailDetails.secure_url, createdAt: Date.now(),
+            courseName, 
+            courseDescription, 
+            instructor: instructorId, 
+            whatYouWillLearn, 
+            price, 
+            category: categoryDetails._id,
+            tag, 
+            status, 
+            instructions, 
+            thumbnail: thumbnailDetails.secure_url, 
+            createdAt: Date.now(),
             courseType: 'Paid', // Default to Paid for new courses
             adminSetFree: false,
             originalPrice: price
         });
 
-        // add course id to instructor courses list, this is bcoz - it will show all created courses by instructor 
+        // add course id to instructor courses list
         await User.findByIdAndUpdate(instructorId,
             {
                 $push: {
@@ -75,7 +176,6 @@ exports.createCourse = async (req, res) => {
             },
             { new: true }
         );
-
 
         // Add the new course to the Categories
         await Category.findByIdAndUpdate(
@@ -97,8 +197,9 @@ exports.createCourse = async (req, res) => {
     }
 
     catch (error) {
-        console.log('Error while creating new course');
-        console.log(error);
+        console.log('=== ERROR CREATING COURSE ===');
+        console.log('Error message:', error.message);
+        console.log('Error stack:', error.stack);
         res.status(500).json({
             success: false,
             error: error.message,
@@ -114,7 +215,8 @@ exports.getAllCourses = async (req, res) => {
         const allCourses = await Course.find({},
             {
                 courseName: true, courseDescription: true, price: true, thumbnail: true, instructor: true,
-                ratingAndReviews: true, studentsEnrolled: true
+                ratingAndReviews: true, studentsEnrolled: true, courseType: true, originalPrice: true,
+                adminSetFree: true
             })
             .populate({
                 path: 'instructor',
@@ -122,9 +224,21 @@ exports.getAllCourses = async (req, res) => {
             })
             .exec();
 
+        // Add average rating to each course
+        const coursesWithRating = await Promise.all(
+            allCourses.map(async (course) => {
+                const ratingData = await calculateAverageRating(course._id);
+                return {
+                    ...course.toObject(),
+                    averageRating: ratingData.averageRating,
+                    totalRatings: ratingData.totalRatings
+                };
+            })
+        );
+
         return res.status(200).json({
             success: true,
-            data: allCourses,
+            data: coursesWithRating,
             message: 'Data for all courses fetched successfully'
         });
     }
@@ -160,7 +274,6 @@ exports.getCourseDetails = async (req, res) => {
             })
             .populate("category")
             .populate("ratingAndReviews")
-
             .populate({
                 path: "courseContent",
                 populate: {
@@ -197,12 +310,17 @@ exports.getCourseDetails = async (req, res) => {
 
         const totalDuration = convertSecondsToDuration(totalDurationInSeconds)
 
+        // Calculate average rating
+        const ratingData = await calculateAverageRating(courseId);
+
         //return response
         return res.status(200).json({
             success: true,
             data: {
                 courseDetails,
                 totalDuration,
+                averageRating: ratingData.averageRating,
+                totalRatings: ratingData.totalRatings
             },
             message: 'Fetched course data successfully'
         })
@@ -278,12 +396,17 @@ exports.getFullCourseDetails = async (req, res) => {
 
         const totalDuration = convertSecondsToDuration(totalDurationInSeconds)
 
+        // Calculate average rating
+        const ratingData = await calculateAverageRating(courseId);
+
         return res.status(200).json({
             success: true,
             data: {
                 courseDetails,
                 totalDuration,
                 completedVideos: courseProgressCount?.completedVideos ? courseProgressCount?.completedVideos : [],
+                averageRating: ratingData.averageRating,
+                totalRatings: ratingData.totalRatings
             },
         })
     } catch (error) {

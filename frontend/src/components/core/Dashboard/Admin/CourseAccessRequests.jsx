@@ -28,9 +28,15 @@ export default function CourseAccessRequests() {
   }
 
   const handleStatusChange = async (requestId, action, adminResponse = '') => {
-    const result = await handleAccessRequest(requestId, action, adminResponse, token)
-    if (result) {
-      fetchAccessRequests()
+    try {
+      console.log('Handling status change:', { requestId, action, adminResponse, token: !!token });
+      const result = await handleAccessRequest(requestId, action, adminResponse, token)
+      console.log('Status change result:', result);
+      if (result) {
+        await fetchAccessRequests()
+      }
+    } catch (error) {
+      console.error('Error handling status change:', error);
     }
   }
 
@@ -79,27 +85,27 @@ export default function CourseAccessRequests() {
                     <Td>
                       <div className="flex items-center gap-x-4">
                         <img
-                          src={request.user.image}
-                          alt={request.user.firstName}
+                          src={request.user?.image || '/default-avatar.png'}
+                          alt={request.user?.firstName || 'User'}
                           className="h-10 w-10 rounded-full object-cover"
                         />
                         <div>
                           <p className="font-medium">
-                            {request.user.firstName} {request.user.lastName}
+                            {request.user?.firstName || 'Unknown'} {request.user?.lastName || 'User'}
                           </p>
-                          <p className="text-sm text-richblack-300">{request.user.email}</p>
+                          <p className="text-sm text-richblack-300">{request.user?.email || 'No email'}</p>
                         </div>
                       </div>
                     </Td>
                     <Td>
                       <div className="flex items-center gap-x-4">
                         <img
-                          src={request.course.thumbnail}
-                          alt={request.course.courseName}
+                          src={request.course?.thumbnail || '/default-course.png'}
+                          alt={request.course?.courseName || 'Course'}
                           className="h-10 w-14 rounded-md object-cover"
                         />
                         <div>
-                          <p className="font-medium">{request.course.courseName}</p>
+                          <p className="font-medium">{request.course?.courseName || 'Unknown Course'}</p>
                         </div>
                       </div>
                     </Td>
@@ -112,12 +118,12 @@ export default function CourseAccessRequests() {
                         <div className="flex gap-x-2">
                           <IconBtn
                             text="Approve"
-                            onclick={() => handleStatusChange(request._id, 'approve')}
+                            onClick={() => handleStatusChange(request._id, 'approve')}
                             customClasses="bg-caribbeangreen-200"
                           />
                           <IconBtn
                             text="Reject"
-                            onclick={() => handleStatusChange(request._id, 'reject')}
+                            onClick={() => handleStatusChange(request._id, 'reject')}
                             customClasses="bg-pink-200"
                           />
                         </div>
@@ -148,7 +154,7 @@ export default function CourseAccessRequests() {
               <div className="mt-4 flex items-center justify-center gap-x-4">
                 <IconBtn
                   text="Previous"
-                  onclick={() => setCurrentPage(currentPage - 1)}
+                  onClick={() => setCurrentPage(currentPage - 1)}
                   disabled={currentPage === 1}
                 />
                 <p className="text-sm font-medium">
@@ -156,7 +162,7 @@ export default function CourseAccessRequests() {
                 </p>
                 <IconBtn
                   text="Next"
-                  onclick={() => setCurrentPage(currentPage + 1)}
+                  onClick={() => setCurrentPage(currentPage + 1)}
                   disabled={currentPage === totalPages}
                 />
               </div>

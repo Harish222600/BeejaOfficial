@@ -26,14 +26,16 @@ export default function CourseTypeManager() {
   const handleCourseTypeChange = async (courseId, courseType) => {
     const result = await setCourseType(courseId, courseType, token)
     if (result) {
-      // Update the local state to reflect the change
+      // Update the local state with the data returned from backend
       setCourses(courses.map(course => 
         course._id === courseId 
-          ? { 
-              ...course, 
-              courseType,
-              adminSetFree: courseType === 'Free',
-              price: courseType === 'Free' ? 0 : course.originalPrice || course.price
+          ? {
+              ...course,
+              ...result, // Use the updated course data from backend
+              courseType: result.courseType,
+              price: result.price,
+              originalPrice: result.originalPrice,
+              adminSetFree: result.adminSetFree
             }
           : course
       ))
@@ -60,6 +62,7 @@ export default function CourseTypeManager() {
                 <Th>Course</Th>
                 <Th>Instructor</Th>
                 <Th>Original Price</Th>
+                <Th>Current Price</Th>
                 <Th>Current Type</Th>
                 <Th>Actions</Th>
               </Tr>
@@ -84,22 +87,39 @@ export default function CourseTypeManager() {
                   </Td>
                   <Td>
                     <div className="flex items-center gap-x-4">
-                      <img
-                        src={course.instructor.image}
-                        alt={course.instructor.firstName}
-                        className="h-10 w-10 rounded-full object-cover"
-                      />
-                      <div>
-                        <p className="font-medium">
-                          {course.instructor.firstName} {course.instructor.lastName}
-                        </p>
-                        <p className="text-sm text-richblack-300">
-                          {course.instructor.email}
-                        </p>
-                      </div>
+                      {course.instructor ? (
+                        <>
+                          <img
+                            src={course.instructor.image}
+                            alt={course.instructor.firstName}
+                            className="h-10 w-10 rounded-full object-cover"
+                          />
+                          <div>
+                            <p className="font-medium">
+                              {course.instructor.firstName} {course.instructor.lastName}
+                            </p>
+                            <p className="text-sm text-richblack-300">
+                              {course.instructor.email}
+                            </p>
+                          </div>
+                        </>
+                      ) : (
+                        <div>
+                          <p className="font-medium text-yellow-50">No instructor assigned</p>
+                        </div>
+                      )}
                     </div>
                   </Td>
-                  <Td>₹{course.originalPrice || course.price}</Td>
+                  <Td>₹{course.originalPrice}</Td>
+                  <Td>
+                    <span className={`font-medium ${
+                      course.courseType === 'Free' 
+                        ? 'text-caribbeangreen-200' 
+                        : 'text-yellow-50'
+                    }`}>
+                      {course.courseType === 'Free' ? 'Free' : `₹${course.price}`}
+                    </span>
+                  </Td>
                   <Td>
                     <span className={`font-medium ${
                       course.courseType === 'Free' 
@@ -114,13 +134,13 @@ export default function CourseTypeManager() {
                       {course.courseType === 'Paid' ? (
                         <IconBtn
                           text="Make Free"
-                          onclick={() => handleCourseTypeChange(course._id, 'Free')}
+                          onClick={() => handleCourseTypeChange(course._id, 'Free')}
                           customClasses="bg-caribbeangreen-200"
                         />
                       ) : (
                         <IconBtn
                           text="Make Paid"
-                          onclick={() => handleCourseTypeChange(course._id, 'Paid')}
+                          onClick={() => handleCourseTypeChange(course._id, 'Paid')}
                           customClasses="bg-yellow-50"
                         />
                       )}

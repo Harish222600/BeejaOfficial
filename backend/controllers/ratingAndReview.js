@@ -15,16 +15,23 @@ exports.createRating = async (req, res) => {
         if (!rating || !review || !courseId) {
             return res.status(401).json({
                 success: false,
-                message: "All fileds are required"
+                message: "All fields are required"
+            });
+        }
+
+        // Validate rating is between 1-5
+        if (rating < 1 || rating > 5 || !Number.isInteger(Number(rating))) {
+            return res.status(400).json({
+                success: false,
+                message: "Rating must be an integer between 1 and 5"
             });
         }
 
         // check user is enrollded in course ?
-        const courseDetails = await Course.findOne({ _id: courseId },
-            {
-                studentsEnrolled: { $elemMatch: { $eq: userId } }
-            });
-
+        const courseDetails = await Course.findOne({ 
+            _id: courseId,
+            studentsEnrolled: { $in: [userId] }
+        });
 
         if (!courseDetails) {
             return res.status(404).json({
@@ -100,7 +107,9 @@ exports.getAverageRating = async (req, res) => {
                 {
                     $group:{
                         _id:null,
-                        averageRating: { $avg: "$rating"},
+                        averageRating: { 
+                            $round: [{ $avg: "$rating" }, 1]
+                        }
                     }
                 }
             ])

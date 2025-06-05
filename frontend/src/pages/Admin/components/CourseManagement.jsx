@@ -94,22 +94,10 @@ const CourseManagement = () => {
       console.log("Toggling visibility for course:", courseId);
       setTogglingCourseId(courseId);
       const response = await toggleCourseVisibility(courseId, token);
-      console.log("Toggle visibility API call successful", response);
-      // Update the courses state with the updated course data
-      console.log("Response course object:", response.course);
-      setCourses((prevCourses) =>
-        prevCourses.map((course) => {
-          if (course._id === courseId) {
-            if (!response.course) {
-              console.error("Response course object is undefined");
-              return course;
-            }
-            console.log("Updated course status:", response.course.status);
-            return response.course;
-          }
-          return course;
-        })
-      );
+      if (response) {
+        toast.success("Course visibility updated successfully");
+        await fetchCourses(); // Refresh the course list
+      }
     } catch (error) {
       console.error('Toggle course visibility failed:', error);
       toast.error(error.response?.data?.message || 'Failed to update course visibility');

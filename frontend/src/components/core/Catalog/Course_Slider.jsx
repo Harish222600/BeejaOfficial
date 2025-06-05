@@ -1,46 +1,20 @@
-import React, { useEffect, useState } from "react"
-
-
-// Import Swiper styles
-import "swiper/css"
-import "swiper/css/free-mode"
-import "swiper/css/pagination"
-// Import Swiper React components
-import { Swiper, SwiperSlide } from "swiper/react"
-// import {  Pagination } from "swiper"
-
+import React from "react"
 import Course_Card from "./Course_Card"
-
-
 
 function Course_Slider({ Courses }) {
   return (
     <>
       {Courses?.length ? (
-        <Swiper
-          slidesPerView={1}
-          spaceBetween={25}
-          loop={true}
-          // modules={[ Pagination]}
-
-          breakpoints={{
-            1024: {
-              slidesPerView: 3,
-            },
-          }}
-          className="max-h-[30rem] pt-8 px-2"
-        >
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pt-8">
           {Courses?.map((course, i) => (
-            <SwiperSlide key={i}>
-              <Course_Card course={course} Height={"h-[250px]"} />
-            </SwiperSlide>
+            <Course_Card key={i} course={course} Height={"h-[250px]"} />
           ))}
-        </Swiper>
+        </div>
       ) : (
-        <div className="flex flex-col sm:flex-row gap-6 ">
-          <p className=" h-[201px] w-full rounded-xl  skeleton"></p>
-          <p className=" h-[201px] w-full rounded-xl hidden lg:flex skeleton"></p>
-          <p className=" h-[201px] w-full rounded-xl hidden lg:flex skeleton"></p>
+        <div className="flex flex-col sm:flex-row gap-6">
+          <p className="h-[201px] w-full rounded-xl skeleton"></p>
+          <p className="h-[201px] w-full rounded-xl hidden lg:flex skeleton"></p>
+          <p className="h-[201px] w-full rounded-xl hidden lg:flex skeleton"></p>
         </div>
       )}
     </>

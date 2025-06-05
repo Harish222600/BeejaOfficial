@@ -43,8 +43,11 @@ export const requestCourseAccess = async (data, token) => {
   const toastId = toast.loading("Submitting request...")
 
   try {
+    // Remove 'Bearer ' prefix if it's already included
+    const authToken = token.startsWith('Bearer ') ? token : `Bearer ${token}`
+    
     const response = await apiConnector("POST", REQUEST_COURSE_ACCESS_API, data, {
-      Authorization: `Bearer ${token}`,
+      Authorization: authToken,
     })
     
     console.log("REQUEST_COURSE_ACCESS_API RESPONSE............", response)
@@ -57,7 +60,7 @@ export const requestCourseAccess = async (data, token) => {
     toast.success("Access request submitted successfully")
   } catch (error) {
     console.log("REQUEST_COURSE_ACCESS_API ERROR............", error)
-    toast.error(error.message)
+    toast.error(error.response?.data?.message || error.message)
   }
   
   toast.dismiss(toastId)

@@ -1,22 +1,20 @@
 
 import { useDispatch, useSelector } from "react-redux"
-
 import { Table, Thead, Tbody, Tr, Th, Td } from 'react-super-responsive-table'
 import 'react-super-responsive-table/dist/SuperResponsiveTableStyle.css'
-
 import { useState } from "react"
-import { FaCheck } from "react-icons/fa"
+import { FaCheck, FaStar } from "react-icons/fa"
 import { FiEdit2 } from "react-icons/fi"
 import { HiClock } from "react-icons/hi"
 import { RiDeleteBin6Line } from "react-icons/ri"
 import { useNavigate } from "react-router-dom"
-
 import { formatDate } from "../../../../services/formatDate"
 import { deleteCourse, fetchInstructorCourses, } from "../../../../services/operations/courseDetailsAPI"
 import { COURSE_STATUS } from "../../../../utils/constants"
 import ConfirmationModal from "../../../common/ConfirmationModal"
 import Img from './../../../common/Img';
 import toast from 'react-hot-toast'
+
 
 
 
@@ -79,6 +77,9 @@ export default function CoursesTable({ courses, setCourses, loading, setLoading 
             </Th>
             <Th className="text-left text-sm font-medium uppercase text-richblack-100">
               Price
+            </Th>
+            <Th className="text-left text-sm font-medium uppercase text-richblack-100">
+              Rating
             </Th>
             <Th className="text-left text-sm font-medium uppercase text-richblack-100">
               Actions
@@ -157,7 +158,21 @@ export default function CoursesTable({ courses, setCourses, loading, setLoading 
 
                   {/* course duration */}
                   <Td className="text-sm font-medium text-richblack-100">2hr 30min</Td>
-                  <Td className="text-sm font-medium text-richblack-100">₹{course.price}</Td>
+                  <Td className="text-sm font-medium text-richblack-100">
+                    {course.courseType === 'Free' ? 'Free' : `₹${course.price}`}
+                  </Td>
+
+                  <Td className="text-sm font-medium text-richblack-100">
+                    <div className="flex items-center gap-2">
+                      <span className="text-yellow-50">
+                        {course?.averageRating?.toFixed(1) || 0}
+                      </span>
+                      <FaStar className="text-yellow-50" />
+                      <span className="text-richblack-300">
+                        ({course?.totalRatings || 0})
+                      </span>
+                    </div>
+                  </Td>
 
                   <Td className="text-sm font-medium text-richblack-100 ">
                     {/* Edit button */}

@@ -7,11 +7,21 @@ import { Link } from 'react-router-dom'
 export default function AccessRequests() {
   const { token } = useSelector((state) => state.auth)
   const [requests, setRequests] = useState([])
+  const [filteredRequests, setFilteredRequests] = useState([])
   const [loading, setLoading] = useState(false)
+  const [statusFilter, setStatusFilter] = useState('All')
 
   useEffect(() => {
     fetchRequests()
   }, [])
+
+  useEffect(() => {
+    if (statusFilter === 'All') {
+      setFilteredRequests(requests)
+    } else {
+      setFilteredRequests(requests.filter(request => request.status === statusFilter))
+    }
+  }, [statusFilter, requests])
 
   const fetchRequests = async () => {
     setLoading(true)
@@ -38,13 +48,25 @@ export default function AccessRequests() {
   return (
     <div className="text-white">
       <div className="flex flex-col gap-y-4 rounded-md border-[1px] border-richblack-700 bg-richblack-800 p-6">
-        <h2 className="text-2xl font-bold text-richblack-5">Course Access Requests</h2>
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-bold text-richblack-5">Course Access Requests</h2>
+          <select 
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="bg-richblack-700 text-richblack-50 px-4 py-2 rounded-md border border-richblack-600"
+          >
+            <option value="All">All Requests</option>
+            <option value="Pending">Pending</option>
+            <option value="Approved">Approved</option>
+            <option value="Rejected">Rejected</option>
+          </select>
+        </div>
 
         {loading ? (
           <div className="flex h-[calc(100vh-20rem)] items-center justify-center">
             <div className="spinner"></div>
           </div>
-        ) : requests.length === 0 ? (
+        ) : filteredRequests.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-y-4 py-12">
             <p className="text-lg text-richblack-5">No access requests found</p>
             <Link
@@ -56,7 +78,7 @@ export default function AccessRequests() {
           </div>
         ) : (
           <div className="grid gap-4 md:grid-cols-2">
-            {requests.map((request) => (
+            {filteredRequests.map((request) => (
               <div
                 key={request._id}
                 className="flex flex-col gap-y-4 rounded-md border border-richblack-700 bg-richblack-700 p-4"
