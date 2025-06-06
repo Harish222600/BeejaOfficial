@@ -107,10 +107,10 @@ const ImprovedFooter = () => {
                       rel="noopener noreferrer"
                       whileHover={{ scale: 1.15, y: -3 }}
                       whileTap={{ scale: 0.9 }}
-                      className={`${styles.socialIcon} p-3 bg-richblack-700 hover:bg-richblack-600 rounded-full text-richblack-300 ${social.color} transition-all duration-300 group cursor-pointer shadow-md hover:shadow-lg`}
+                                            className={`${styles.socialIcon} p-3 bg-richblack-700 hover:bg-richblack-600 rounded-full text-richblack-300 ${social.color} transition-all duration-75 group cursor-pointer shadow-md hover:shadow-lg`}
                       title={`Follow us on ${social.name}`}
                     >
-                      <social.icon className="w-5 h-5 transition-transform duration-300 group-hover:rotate-12" />
+                      <social.icon className="w-5 h-5 transition-transform duration-75 group-hover:rotate-12" />
                     </motion.a>
                   ))}
                 </div>
@@ -136,9 +136,9 @@ const ImprovedFooter = () => {
                       <Link
                         key={index}
                         to={link.link}
-                        className="block text-richblack-400 hover:text-yellow-50 transition-all duration-300 text-sm hover:translate-x-1 group"
+                        className="block text-richblack-400 hover:text-yellow-50 transition-all text-sm hover:translate-x-1 group"
                       >
-                        <span className="border-b border-transparent group-hover:border-yellow-50 transition-all duration-300">
+                        <span className="border-b border-transparent group-hover:border-yellow-50 transition-all">
                           {link.title}
                         </span>
                       </Link>
