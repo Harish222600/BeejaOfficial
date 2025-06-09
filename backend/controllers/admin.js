@@ -507,3 +507,142 @@ exports.getAnalytics = async (req, res) => {
         });
     }
 };
+
+// ================ GET ALL INSTRUCTORS ================
+exports.getAllInstructors = async (req, res) => {
+    try {
+        const instructors = await User.find({ accountType: 'Instructor' })
+            .select('firstName lastName email _id')
+            .sort({ createdAt: -1 });
+
+        res.status(200).json({
+            success: true,
+            message: 'Instructors fetched successfully',
+            instructors
+        });
+
+    } catch (error) {
+        console.error('Error fetching instructors:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error',
+            error: error.message
+        });
+    }
+};
+
+// ================ CREATE COURSE AS ADMIN ================
+exports.createCourseAsAdmin = async (req, res) => {
+    try {
+        const {
+            courseName,
+            courseDescription,
+            price,
+            category,
+            whatYouWillLearn,
+            instructorId,
+            status,
+            tag,
+            instructions
+        } = req.body;
+
+        // Get the thumbnail image from the request
+        const thumbnail = req.files?.thumbnailImage;
+
+        // Validation
+        if (!courseName || !courseDescription || !price || !category || 
+            !whatYouWillLearn || !instructorId || !status || !thumbnail) {
+            return res.status(400).json({
+                success: false,
+                message: 'All required fields must be provided'
+            });
+        }
+
+        // Verify instructor exists
+        const instructor = await User.findById(instructorId);
+        if (!instructor || instructor.accountType !== 'Instructor') {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid instructor ID'
+            });
+        }
+
+        // Verify category exists
+        const Category = require('../models/category');
+        const categoryDetails = await Category.findById(category);
+        if (!categoryDetails) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid category ID'
+            });
+        }
+
+        // Upload thumbnail to Cloudinary
+        const { uploadImageToCloudinary } = require('../utils/imageUploader');
+        const thumbnailImage = await uploadImageToCloudinary(
+            thumbnail,
+            process.env.FOLDER_NAME
+        );
+
+        // Parse JSON fields
+        let parsedTags = [];
+        let parsedInstructions = [];
+
+        try {
+            parsedTags = tag ? JSON.parse(tag) : [];
+            parsedInstructions = instructions ? JSON.parse(instructions) : [];
+        } catch (parseError) {
+            console.error('Error parsing JSON fields:', parseError);
+            parsedTags = [];
+            parsedInstructions = [];
+        }
+
+        // Create new course
+        const newCourse = await Course.create({
+            courseName,
+            courseDescription,
+            instructor: instructorId,
+            whatYouWillLearn,
+            price,
+            tag: parsedTags,
+            category,
+            thumbnail: thumbnailImage.secure_url,
+            status,
+            instructions: parsedInstructions,
+            createdAt: new Date(),
+        });
+
+        // Add course to instructor's courses
+        await User.findByIdAndUpdate(
+            instructorId,
+            { $push: { courses: newCourse._id } },
+            { new: true }
+        );
+
+        // Add course to category
+        await Category.findByIdAndUpdate(
+            category,
+            { $push: { courses: newCourse._id } },
+            { new: true }
+        );
+
+        // Populate the course with instructor and category details
+        const populatedCourse = await Course.findById(newCourse._id)
+            .populate('instructor', 'firstName lastName email')
+            .populate('category', 'name description');
+
+        res.status(201).json({
+            success: true,
+            message: 'Course created successfully',
+            course: populatedCourse
+        });
+
+    } catch (error) {
+        console.error('Error creating course:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error',
+            error: error.message
+        });
+    }
+};

@@ -184,12 +184,9 @@ export default function Instructor() {
             <p className="text-center text-2xl font-bold text-richblack-5">
               You have not created any courses yet
             </p>
-
-            <Link to="/dashboard/add-course">
-              <p className="mt-1 text-center text-lg font-semibold text-yellow-50">
-                Create a course
-              </p>
-            </Link>
+            <p className="mt-1 text-center text-lg text-richblack-300">
+              Contact admin to create a new course
+            </p>
           </div>
         )}
     </div>

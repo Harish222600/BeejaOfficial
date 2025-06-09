@@ -78,9 +78,11 @@ export const adminEndpoints = {
   UPDATE_USER_API: BASE_URL + "/api/v1/admin/users/:userId",
   DELETE_USER_API: BASE_URL + "/api/v1/admin/users/:userId",
   TOGGLE_USER_STATUS_API: BASE_URL + "/api/v1/admin/users/:userId/toggle-status",
+  GET_ALL_INSTRUCTORS_API: BASE_URL + "/api/v1/admin/instructors",
 
   // Course Management
   GET_ALL_COURSES_API: BASE_URL + "/api/v1/admin/courses",
+  CREATE_COURSE_AS_ADMIN_API: BASE_URL + "/api/v1/admin/courses/create",
   APPROVE_COURSE_API: BASE_URL + "/api/v1/admin/courses/:courseId/approve",
   DELETE_COURSE_API: BASE_URL + "/api/v1/admin/courses/:courseId",
   TOGGLE_COURSE_VISIBILITY_API: BASE_URL + "/api/v1/admin/courses/:courseId/toggle-visibility",

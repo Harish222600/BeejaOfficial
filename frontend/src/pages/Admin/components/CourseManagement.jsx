@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { getAllCourses, approveCourse, deleteCourse, toggleCourseVisibility } from "../../../services/operations/adminAPI";
-import { FaCheck, FaTrash, FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaCheck, FaTrash, FaEye, FaEyeSlash, FaPlus } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import ConfirmationModal from "../../../components/common/ConfirmationModal";
+import CreateCourse from "./CreateCourse/CreateCourse";
 
 const CourseManagement = () => {
+  const [showCreateCourse, setShowCreateCourse] = useState(false);
   const { token } = useSelector((state) => state.auth);
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -119,7 +121,16 @@ const CourseManagement = () => {
   return (
     <div className="text-richblack-5">
       <div className="mb-8">
-        <h4 className="text-lg font-semibold mb-6">Course Management</h4>
+        <div className="flex justify-between items-center mb-6">
+          <h4 className="text-lg font-semibold">Course Management</h4>
+          <button
+            onClick={() => setShowCreateCourse(true)}
+            className="flex items-center gap-2 bg-yellow-50 text-richblack-900 px-4 py-2 rounded-lg hover:bg-yellow-100 transition-colors"
+          >
+            <FaPlus className="w-4 h-4" />
+            Create Course
+          </button>
+        </div>
         
         {/* Course Statistics */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -140,7 +151,9 @@ const CourseManagement = () => {
 
       {loading && <p>Loading courses...</p>}
       {error && <p className="text-red-500">{error}</p>}
-      {!loading && !error && (
+      {showCreateCourse ? (
+        <CreateCourse onCancel={() => setShowCreateCourse(false)} />
+      ) : !loading && !error && (
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>

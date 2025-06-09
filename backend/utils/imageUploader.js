@@ -6,13 +6,16 @@ exports.uploadImageToCloudinary = async (file, folder, height, quality) => {
         if (height) options.height = height;
         if (quality) options.quality = quality;
 
-        // options.resourse_type = 'auto';
         options.resource_type = 'auto';
-        return await cloudinary.uploader.upload(file.tempFilePath, options);
+        
+        // Handle both file path (disk storage) and file buffer (memory storage)
+        const filePath = file.path || file.tempFilePath;
+        return await cloudinary.uploader.upload(filePath, options);
     }
     catch (error) {
         console.log("Error while uploading image");
         console.log(error);
+        throw error;
     }
 }
 

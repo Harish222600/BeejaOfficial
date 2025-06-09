@@ -3,7 +3,7 @@ const express = require('express')
 const app = express();
 
 // packages
-const fileUpload = require('express-fileupload');
+// const fileUpload = require('express-fileupload');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 
@@ -55,12 +55,13 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use(
-    fileUpload({
-        useTempFiles: true,
-        tempFileDir: '/tmp'
-    })
-);
+// Removed express-fileupload middleware to avoid conflict with multer
+// app.use(
+//     fileUpload({
+//         useTempFiles: true,
+//         tempFileDir: '/tmp'
+//     })
+// );
 
 // mount routes
 app.use('/api/v1/auth', userRoutes);

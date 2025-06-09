@@ -8,7 +8,7 @@ import { Player } from "video-react"
 
 
 
-export default function Upload({ name, label, register, setValue, errors, video = false, viewData = null, editData = null, }) {
+export default function Upload({ name, label, register, setValue, errors, video = false, viewData = null, editData = null, setImageFile = null }) {
   // const { course } = useSelector((state) => state.course)
   const [selectedFile, setSelectedFile] = useState(null)
   const [previewSource, setPreviewSource] = useState(viewData ? viewData : editData ? editData : "")
@@ -44,8 +44,18 @@ export default function Upload({ name, label, register, setValue, errors, video 
 
 
   useEffect(() => {
-    setValue(name, selectedFile)
-  }, [selectedFile, setValue])
+    if (selectedFile) {
+      setValue(name, selectedFile)
+      if (setImageFile) {
+        setImageFile(selectedFile)
+      }
+      console.log("Selected file:", {
+        name: selectedFile.name,
+        type: selectedFile.type,
+        size: selectedFile.size
+      })
+    }
+  }, [selectedFile, setValue, name, setImageFile])
 
   return (
     <div className="flex flex-col space-y-2">

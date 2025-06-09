@@ -8,7 +8,9 @@ const {
   UPDATE_USER_API,
   DELETE_USER_API,
   TOGGLE_USER_STATUS_API,
+  GET_ALL_INSTRUCTORS_API,
   GET_ALL_COURSES_API,
+  CREATE_COURSE_AS_ADMIN_API,
   APPROVE_COURSE_API,
   DELETE_COURSE_API,
   TOGGLE_COURSE_VISIBILITY_API,
@@ -292,6 +294,61 @@ export const toggleCourseVisibility = async (courseId, token) => {
   } catch (error) {
     console.log("TOGGLE_COURSE_VISIBILITY_API ERROR............", error)
     toast.error(error.response?.data?.message || error.message)
+  }
+  
+  toast.dismiss(toastId)
+  return result
+}
+
+// ================ Get All Instructors ================
+export const getAllInstructors = async (token) => {
+  let result = []
+  const toastId = toast.loading("Loading instructors...")
+
+  try {
+    const response = await apiConnector("GET", GET_ALL_INSTRUCTORS_API, null, {
+      Authorization: `Bearer ${token}`,
+    })
+    
+    if (!response?.data?.success) {
+      throw new Error("Could Not Fetch Instructors")
+    }
+    
+    result = response?.data?.instructors
+  } catch (error) {
+    console.log("GET_ALL_INSTRUCTORS_API ERROR............", error)
+    toast.error(error.message)
+  }
+  
+  toast.dismiss(toastId)
+  return result
+}
+
+// ================ Create Course As Admin ================
+export const createCourseAsAdmin = async (formData, token) => {
+  const toastId = toast.loading("Creating course...")
+  let result = null
+
+  try {
+    console.log("Sending course creation request with formData:", formData)
+    
+    const response = await apiConnector("POST", CREATE_COURSE_AS_ADMIN_API, formData, {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data",
+    })
+    
+    console.log("CREATE_COURSE_AS_ADMIN_API RESPONSE............", response)
+
+    if (!response?.data?.success) {
+      throw new Error(response?.data?.message || "Could Not Create Course")
+    }
+
+    toast.success("Course created successfully")
+    result = response?.data?.course
+  } catch (error) {
+    console.log("CREATE_COURSE_AS_ADMIN_API ERROR............", error)
+    const errorMessage = error.response?.data?.message || error.message || "Failed to create course"
+    toast.error(errorMessage)
   }
   
   toast.dismiss(toastId)
