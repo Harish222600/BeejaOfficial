@@ -22,7 +22,7 @@ export default function ConfirmationModal({
           />
           <button
             className="cursor-pointer rounded-md bg-richblack-200 px-4 py-2 text-richblack-900 font-semibold hover:scale-95 transition-all duration-200"
-            onClick={closeModal}
+            onClick={modalData?.btn2Handler}
           >
             {modalData?.btn2Text}
           </button>

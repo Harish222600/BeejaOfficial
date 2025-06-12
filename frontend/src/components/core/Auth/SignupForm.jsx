@@ -49,6 +49,9 @@ function SignupForm() {
       toast.error("Passwords Do Not Match")
       return;
     }
+    
+    // Prepare data to send for signup
+    // This data will be used to create user account after OTP verification
     const signupData = {
       ...formData,
       accountType,

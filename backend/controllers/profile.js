@@ -155,17 +155,24 @@ exports.getUserDetails = async (req, res) => {
 // ================ Update User profile Image ================
 exports.updateUserProfileImage = async (req, res) => {
     try {
-        const profileImage = req.files?.profileImage;
+        const profileImage = req.file; // multer provides file in req.file when using upload.single()
         const userId = req.user.id;
 
         // validation
-        // console.log('profileImage = ', profileImage)
+        if (!profileImage) {
+            return res.status(400).json({
+                success: false,
+                message: 'No profile image provided',
+            });
+        }
 
-        // upload imga eto cloudinary
+        console.log('profileImage = ', profileImage);
+
+        // upload image to cloudinary
         const image = await uploadImageToCloudinary(profileImage,
             process.env.FOLDER_NAME, 1000, 1000);
 
-        // console.log('image url - ', image);
+        console.log('image url - ', image);
 
         // update in DB 
         const updatedUserDetails = await User.findByIdAndUpdate(userId,
@@ -174,7 +181,6 @@ exports.updateUserProfileImage = async (req, res) => {
         )
             .populate({
                 path: 'additionalDetails'
-
             })
 
         // success response

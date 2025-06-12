@@ -534,6 +534,11 @@ exports.getAllInstructors = async (req, res) => {
 // ================ CREATE COURSE AS ADMIN ================
 exports.createCourseAsAdmin = async (req, res) => {
     try {
+        console.log('Create course request received:', {
+            body: req.body,
+            files: req.files ? Object.keys(req.files) : 'No files'
+        });
+
         const {
             courseName,
             courseDescription,
@@ -546,15 +551,38 @@ exports.createCourseAsAdmin = async (req, res) => {
             instructions
         } = req.body;
 
-        // Get the thumbnail image from the request
-        const thumbnail = req.files?.thumbnailImage;
+        // Get the thumbnail image from the request - fix variable mismatch
+        const thumbnailFile = req.files?.thumbnailImage?.[0];
+
+        console.log('Extracted data:', {
+            courseName,
+            courseDescription,
+            price,
+            category,
+            whatYouWillLearn,
+            instructorId,
+            status,
+            tag,
+            instructions,
+            thumbnailFile: thumbnailFile ? 'File present' : 'No file'
+        });
 
         // Validation
         if (!courseName || !courseDescription || !price || !category || 
-            !whatYouWillLearn || !instructorId || !status || !thumbnail) {
+            !whatYouWillLearn || !instructorId || !status || !thumbnailFile) {
             return res.status(400).json({
                 success: false,
-                message: 'All required fields must be provided'
+                message: 'All required fields must be provided',
+                missingFields: {
+                    courseName: !courseName,
+                    courseDescription: !courseDescription,
+                    price: !price,
+                    category: !category,
+                    whatYouWillLearn: !whatYouWillLearn,
+                    instructorId: !instructorId,
+                    status: !status,
+                    thumbnailFile: !thumbnailFile
+                }
             });
         }
 
@@ -579,10 +607,15 @@ exports.createCourseAsAdmin = async (req, res) => {
 
         // Upload thumbnail to Cloudinary
         const { uploadImageToCloudinary } = require('../utils/imageUploader');
+        console.log('Uploading thumbnail to Cloudinary...');
+        if (!process.env.FOLDER_NAME) {
+            console.error('FOLDER_NAME environment variable is not set');
+        }
         const thumbnailImage = await uploadImageToCloudinary(
-            thumbnail,
-            process.env.FOLDER_NAME
+            thumbnailFile,
+            process.env.FOLDER_NAME || 'default_folder'
         );
+        console.log('Thumbnail uploaded successfully:', thumbnailImage.secure_url);
 
         // Parse JSON fields
         let parsedTags = [];
@@ -597,13 +630,18 @@ exports.createCourseAsAdmin = async (req, res) => {
             parsedInstructions = [];
         }
 
+        console.log('Parsed data:', {
+            parsedTags,
+            parsedInstructions
+        });
+
         // Create new course
         const newCourse = await Course.create({
             courseName,
             courseDescription,
             instructor: instructorId,
             whatYouWillLearn,
-            price,
+            price: Number(price),
             tag: parsedTags,
             category,
             thumbnail: thumbnailImage.secure_url,
@@ -611,6 +649,8 @@ exports.createCourseAsAdmin = async (req, res) => {
             instructions: parsedInstructions,
             createdAt: new Date(),
         });
+
+        console.log('Course created successfully:', newCourse._id);
 
         // Add course to instructor's courses
         await User.findByIdAndUpdate(
@@ -638,7 +678,31 @@ exports.createCourseAsAdmin = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Error creating course:', error);
+        console.error('Error creating course:', {
+            message: error.message,
+            stack: error.stack,
+            name: error.name,
+            fullError: error
+        });
+        
+        // Handle specific errors
+        if (error.name === 'ValidationError') {
+            const validationErrors = Object.values(error.errors).map(err => err.message);
+            return res.status(400).json({
+                success: false,
+                message: 'Validation error',
+                errors: validationErrors
+            });
+        }
+
+        if (error.name === 'CastError') {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid ID format',
+                error: error.message
+            });
+        }
+
         res.status(500).json({
             success: false,
             message: 'Internal server error',

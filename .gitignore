@@ -23,4 +23,8 @@ dist-ssr
 *.sln
 *.sw?
 
+# Temporary files
+tmp/
+backend/tmp/
+.node_modules
 

@@ -6,6 +6,16 @@ exports.createSection = async (req, res) => {
     try {
         // extract data 
         const { sectionName, courseId } = req.body;
+        const userId = req.user.id;
+
+        // Verify course exists and user has permission
+        const course = await Course.findById(courseId);
+        if (!course) {
+            return res.status(404).json({
+                success: false,
+                message: 'Course not found'
+            });
+        }
         // console.log('sectionName, courseId = ', sectionName, ",  = ", courseId)
 
         // validation

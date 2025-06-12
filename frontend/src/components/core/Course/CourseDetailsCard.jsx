@@ -131,20 +131,10 @@ function CourseDetailsCard({ course, setConfirmationModal, handleBuyCourse }) {
                     ? "Go To Course"
                     : "Buy Now"}
                 </button>
-                {(!user || !course?.studentsEnrolled.includes(user?._id)) && (
-                  <button onClick={handleAddToCart} className="blackButton outline-none">
-                    Add to Cart
-                  </button>
-                )}
+                {/* Removed Add to Cart button as per user request */}
               </>
             )}
           </div>
-
-          {course?.courseType !== 'Free' && (
-            <p className="pb-3 pt-6 text-center text-sm text-richblack-25">
-              30-Day Money-Back Guarantee
-            </p>
-          )}
 
           <div className={``}>
             <p className={`my-2 text-xl font-semibold `}>

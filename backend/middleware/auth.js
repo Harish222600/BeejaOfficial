@@ -17,7 +17,9 @@ exports.auth = (req, res, next) => {
             fromBody: !!req.body?.token,
             fromCookies: !!req.cookies?.token,
             fromHeaders: !!req.header('Authorization'),
-            tokenExists: !!token
+            tokenExists: !!token,
+            authHeader: req.header('Authorization'),
+            tokenPreview: token ? token.substring(0, 20) + '...' : 'No token'
         });
 
         // if token is missing
@@ -42,6 +44,7 @@ exports.auth = (req, res, next) => {
         }
         catch (error) {
             console.log('Error while decoding token:', error.message);
+            console.log('JWT_SECRET exists:', !!process.env.JWT_SECRET);
             return res.status(401).json({
                 success: false,
                 error: error.message,
@@ -92,23 +95,23 @@ exports.isStudent = (req, res, next) => {
 // ================ IS INSTRUCTOR ================
 exports.isInstructor = (req, res, next) => {
     try {
-        // console.log('User data -> ', req.user)
-        if (req.user?.accountType != 'Instructor') {
+        // Allow both Instructors and Admins
+        if (req.user?.accountType !== 'Instructor' && req.user?.accountType !== 'Admin') {
             return res.status(401).json({
                 success: false,
-                messgae: 'This Page is protected only for Instructor'
+                message: 'This page is protected for Instructors and Admins only'
             })
         }
         // go to next middleware
         next();
     }
     catch (error) {
-        console.log('Error while cheching user validity with Instructor accountType');
+        console.log('Error while checking user validity with Instructor/Admin accountType');
         console.log(error);
         return res.status(500).json({
             success: false,
             error: error.message,
-            messgae: 'Error while cheching user validity with Instructor accountType'
+            message: 'Error while checking user validity with Instructor/Admin accountType'
         })
     }
 }

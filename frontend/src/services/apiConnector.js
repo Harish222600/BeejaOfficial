@@ -12,9 +12,10 @@ export const apiConnector = (method, url, bodyData, headers, params) => {
     const isFormData = bodyData instanceof FormData;
     
     // Set default headers, but don't override Content-Type for FormData
-    const defaultHeaders = isFormData 
-        ? {} 
-        : { 'Content-Type': 'application/json' };
+    const defaultHeaders = {
+        ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
+        ...(headers?.Authorization ? { 'Authorization': headers.Authorization } : {})
+    };
 
     return axiosInstance({
         method: `${method}`,

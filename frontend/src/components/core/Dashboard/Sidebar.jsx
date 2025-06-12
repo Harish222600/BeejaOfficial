@@ -115,7 +115,7 @@ export default function Sidebar() {
       }
 
 
-      {confirmationModal && <ConfirmationModal modalData={confirmationModal} />}
+      {confirmationModal && <ConfirmationModal modalData={confirmationModal} closeModal={() => setConfirmationModal(null)} />}
     </>
   )
 }

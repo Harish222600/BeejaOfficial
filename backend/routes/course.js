@@ -51,28 +51,29 @@ const {
 
 // Middlewares
 const { auth, isAdmin, isInstructor, isStudent } = require('../middleware/auth')
+const { upload } = require('../middleware/multer')
 
 
 // ********************************************************************************************************
 //                                      Course routes
 // ********************************************************************************************************
-// Courses can Only be Created by Instructors
+// Courses can Only be Created by Admins
 
-router.post('/createCourse', auth, isInstructor, createCourse);
+router.post('/createCourse', auth, isAdmin, upload.single('thumbnailImage'), createCourse);
 
 //Add a Section to a Course
-router.post('/addSection', auth, isInstructor, createSection);
+router.post('/addSection', auth, isAdmin, createSection);
 // Update a Section
-router.post('/updateSection', auth, isInstructor, updateSection);
+router.post('/updateSection', auth, isAdmin, updateSection);
 // Delete a Section
-router.post('/deleteSection', auth, isInstructor, deleteSection);
+router.post('/deleteSection', auth, isAdmin, deleteSection);
 
 // Add a Sub Section to a Section
-router.post('/addSubSection', auth, isInstructor, createSubSection);
+router.post('/addSubSection', auth, isAdmin, upload.single('video'), createSubSection);
 // Edit Sub Section
-router.post('/updateSubSection', auth, isInstructor, updateSubSection);
+router.post('/updateSubSection', auth, isAdmin, upload.single('videoFile'), updateSubSection);
 // Delete Sub Section
-router.post('/deleteSubSection', auth, isInstructor, deleteSubSection);
+router.post('/deleteSubSection', auth, isAdmin, deleteSubSection);
 
 
 // Get Details for a Specific Courses
@@ -81,15 +82,15 @@ router.post('/getCourseDetails', getCourseDetails);
 router.get('/getAllCourses', getAllCourses);
 // get full course details
 router.post('/getFullCourseDetails', auth, getFullCourseDetails);
-// Get all Courses Under a Specific Instructor
-router.get("/getInstructorCourses", auth, isInstructor, getInstructorCourses)
+// Get all Courses Under a Specific Admin
+router.get("/getInstructorCourses", auth, isAdmin, getInstructorCourses)
 
 
 // Edit Course routes
-router.post("/editCourse", auth, isInstructor, editCourse)
+router.post("/editCourse", auth, isAdmin, upload.single('thumbnailImage'), editCourse)
 
 // Delete a Course
-router.delete("/deleteCourse", auth, isInstructor, deleteCourse)
+router.delete("/deleteCourse", auth, isAdmin, deleteCourse)
 
 // update Course Progress
 router.post("/updateCourseProgress", auth, isStudent, updateCourseProgress)
@@ -100,8 +101,7 @@ router.post("/updateCourseProgress", auth, isStudent, updateCourseProgress)
 // ********************************************************************************************************
 // Category can Only be Created by Admin
 
-// Temporarily removed auth for testing
-router.post('/createCategory', createCategory);
+router.post('/createCategory', auth, isAdmin, createCategory);
 router.get('/showAllCategories', showAllCategories);
 router.post("/getCategoryPageDetails", getCategoryPageDetails)
 

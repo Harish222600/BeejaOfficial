@@ -3,8 +3,9 @@ const User = require('../models/user');
 const Profile = require('../models/profile');
 const bcrypt = require('bcrypt');
 
+require('dotenv').config();
 // MongoDB container connection
-const MONGO_URI = 'mongodb://172.17.0.3:27017/learnhub';
+const MONGO_URI = process.env.MONGODB_URL;
 
 const createAdminUser = async () => {
   try {
@@ -15,9 +16,18 @@ const createAdminUser = async () => {
     console.log('Connected to database');
 
     // Check if admin already exists
-    const existingAdmin = await User.findOne({ email: 'admin@example.com' });
+    const existingAdmin = await User.findOne({ email: 'hariharish2604@gmail.com' });
     if (existingAdmin) {
       console.log('Admin user already exists');
+      // Update to admin if not already
+      if (existingAdmin.accountType !== 'Admin') {
+        await User.findByIdAndUpdate(existingAdmin._id, { 
+          accountType: 'Admin',
+          active: true,
+          approved: true 
+        });
+        console.log('Updated existing user to Admin');
+      }
       process.exit(0);
     }
 
@@ -32,15 +42,15 @@ const createAdminUser = async () => {
     // Create admin user
     const hashedPassword = await bcrypt.hash('admin123', 10);
     const adminUser = await User.create({
-      firstName: 'Admin',
-      lastName: 'User',
-      email: 'admin@example.com',
+      firstName: 'Harish',
+      lastName: 'Admin',
+      email: 'hariharish2604@gmail.com',
       password: hashedPassword,
       accountType: 'Admin',
       additionalDetails: profileDetails._id,
       approved: true,
       active: true,
-      image: `https://api.dicebear.com/5.x/initials/svg?seed=Admin User`
+      image: `https://api.dicebear.com/5.x/initials/svg?seed=Harish Admin`
     });
 
     console.log('Admin user created successfully:', {

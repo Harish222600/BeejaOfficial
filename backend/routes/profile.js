@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const { auth, isInstructor } = require("../middleware/auth");
+const { upload } = require("../middleware/multer");
 
 // controllers
 const {
@@ -28,7 +29,7 @@ router.get('/getUserDetails', auth, getUserDetails);
 router.get('/getEnrolledCourses', auth, getEnrolledCourses);
 
 // update profile image
-router.put('/updateUserProfileImage', auth, updateUserProfileImage);
+router.put('/updateUserProfileImage', auth, upload.single('profileImage'), updateUserProfileImage);
 
 // instructor Dashboard Details
 router.get('/instructorDashboard', auth, isInstructor, instructorDashboard);

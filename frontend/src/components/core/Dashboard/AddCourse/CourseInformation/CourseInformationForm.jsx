@@ -5,7 +5,8 @@ import { HiOutlineCurrencyRupee } from "react-icons/hi"
 import { MdNavigateNext } from "react-icons/md"
 import { useDispatch, useSelector } from "react-redux"
 
-import { addCourseDetails, editCourseDetails, fetchCourseCategories } from "../../../../../services/operations/courseDetailsAPI"
+import { editCourseDetails, fetchCourseCategories, addCourseDetails } from "../../../../../services/operations/courseDetailsAPI"
+import { getAllInstructors, createCourseAsAdmin } from "../../../../../services/operations/adminAPI"
 import { setCourse, setStep } from "../../../../../slices/courseSlice"
 import { COURSE_STATUS } from "../../../../../utils/constants"
 import IconBtn from "../../../../common/IconBtn"
@@ -19,9 +20,11 @@ export default function CourseInformationForm() {
 
   const dispatch = useDispatch()
   const { token } = useSelector((state) => state.auth)
+  const { user } = useSelector((state) => state.profile)
   const { course, editCourse } = useSelector((state) => state.course)
   const [loading, setLoading] = useState(false)
   const [courseCategories, setCourseCategories] = useState([])
+  const [instructors, setInstructors] = useState([])
 
   useEffect(() => {
     const getCategories = async () => {
@@ -32,6 +35,17 @@ export default function CourseInformationForm() {
         setCourseCategories(categories)
       }
       setLoading(false)
+    }
+
+    const getInstructors = async () => {
+      if (user?.accountType === 'Admin') {
+        setLoading(true)
+        const instructorsData = await getAllInstructors(token);
+        if (instructorsData) {
+          setInstructors(instructorsData)
+        }
+        setLoading(false)
+      }
     }
     // if form is in edit mode 
     // It will add value in input field
@@ -45,9 +59,13 @@ export default function CourseInformationForm() {
       setValue("courseCategory", course.category)
       setValue("courseRequirements", course.instructions)
       setValue("courseImage", course.thumbnail)
+      if (user?.accountType === 'Admin' && course.instructor) {
+        setValue("instructorId", course.instructor._id)
+      }
     }
 
     getCategories()
+    getInstructors()
   }, [])
 
 
@@ -114,6 +132,7 @@ export default function CourseInformationForm() {
         const result = await editCourseDetails(formData, token)
         setLoading(false)
         if (result) {
+          toast.success("Course updated successfully")
           dispatch(setStep(2))
           dispatch(setCourse(result))
         }
@@ -134,13 +153,53 @@ export default function CourseInformationForm() {
     formData.append("status", COURSE_STATUS.DRAFT)
     formData.append("instructions", JSON.stringify(data.courseRequirements))
     formData.append("thumbnailImage", data.courseImage)
+    
     setLoading(true)
-    const result = await addCourseDetails(formData, token)
-    if (result) {
-      dispatch(setStep(2))
-      dispatch(setCourse(result))
+    let result
+    
+    try {
+      // Debug logs to verify user and token
+      console.log('Current user:', {
+        accountType: user?.accountType,
+        id: user?.id,
+        token: token ? 'Token exists' : 'No token'
+      })
+      
+      // Use different API based on user type
+      if (user?.accountType === 'Admin') {
+        console.log('Creating course as admin')
+        console.log('Form data:', {
+          courseName: data.courseTitle,
+          instructorId: data.instructorId,
+          price: data.coursePrice,
+          category: data.courseCategory
+        })
+        
+        // Add instructor ID for admin course creation
+        if (data.instructorId) {
+          formData.append("instructorId", data.instructorId)
+        }
+        
+        // Call admin API with explicit headers
+        result = await createCourseAsAdmin(formData, token)
+      } else {
+        console.log('Creating course as instructor')
+        // Regular instructor course creation
+        result = await addCourseDetails(formData, token)
+      }
+      
+      if (result) {
+        toast.success("Course created successfully")
+        // Continue to next step for both admin and instructor
+        dispatch(setStep(2))
+        dispatch(setCourse(result))
+      }
+    } catch (error) {
+      console.error('Error creating course:', error)
+      toast.error('Failed to create course. Please try again.')
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   return (
@@ -286,6 +345,35 @@ export default function CourseInformationForm() {
         setValue={setValue}
         errors={errors}
       />
+
+      {/* Instructor Selection - Only for Admin */}
+      {user?.accountType === 'Admin' && (
+        <div className="flex flex-col space-y-2">
+          <label className="text-sm text-richblack-5" htmlFor="instructorId">
+            Select Instructor <sup className="text-pink-200">*</sup>
+          </label>
+          <select
+            id="instructorId"
+            defaultValue=""
+            {...register("instructorId", { required: user?.accountType === 'Admin' })}
+            className="form-style w-full"
+          >
+            <option value="" disabled>
+              Choose an Instructor
+            </option>
+            {instructors?.map((instructor) => (
+              <option key={instructor._id} value={instructor._id}>
+                {instructor.firstName} {instructor.lastName}
+              </option>
+            ))}
+          </select>
+          {errors.instructorId && (
+            <span className="ml-2 text-xs tracking-wide text-pink-200">
+              Instructor selection is required
+            </span>
+          )}
+        </div>
+      )}
 
       {/* Next Button */}
       <div className="flex justify-end gap-x-2">

@@ -99,7 +99,7 @@ exports.createCourse = async (req, res) => {
         }
 
         // get thumbnail of course
-        const thumbnail = req.files?.thumbnailImage;
+        const thumbnail = req.file;
 
         // validation
         if (!courseName || !courseDescription || !whatYouWillLearn || !price || !category || !thumbnail) {
@@ -431,26 +431,31 @@ exports.editCourse = async (req, res) => {
         }
 
         // If Thumbnail Image is found, update it
-        if (req.files) {
+        if (req.file) {
             // console.log("thumbnail update")
-            const thumbnail = req.files.thumbnailImage
             const thumbnailImage = await uploadImageToCloudinary(
-                thumbnail,
+                req.file,
                 process.env.FOLDER_NAME
             )
             course.thumbnail = thumbnailImage.secure_url
         }
 
-        // Update only the fields that are present in the request body
-        for (const key in updates) {
-            if (updates.hasOwnProperty(key)) {
-                if (key === "tag" || key === "instructions") {
-                    course[key] = JSON.parse(updates[key])
-                } else {
-                    course[key] = updates[key]
+        // Convert FormData to plain object if needed
+        const updateData = {};
+        for (const [key, value] of Object.entries(updates)) {
+            if (key === "tag" || key === "instructions") {
+                try {
+                    updateData[key] = JSON.parse(value);
+                } catch (e) {
+                    updateData[key] = value;
                 }
+            } else {
+                updateData[key] = value;
             }
         }
+
+        // Update course fields
+        Object.assign(course, updateData);
 
         // updatedAt
         course.updatedAt = Date.now();

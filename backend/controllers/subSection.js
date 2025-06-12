@@ -11,9 +11,8 @@ exports.createSubSection = async (req, res) => {
         const { title, description, sectionId } = req.body;
 
         // extract video file
-        const videoFile = req.files?.video || req.files?.videoFile;
-        console.log('req.files:', req.files);
-        console.log('videoFile:', videoFile);
+        const videoFile = req.file;
+        console.log('req.file:', req.file);
 
         // validation
         if (!title || !description || !sectionId) {
@@ -98,8 +97,8 @@ exports.updateSubSection = async (req, res) => {
         }
 
         // upload video to cloudinary
-        if (req.files && req.files.videoFile !== undefined) {
-            const video = req.files.videoFile;
+        if (req.file) {
+            const video = req.file;
             const uploadDetails = await uploadImageToCloudinary(video, process.env.FOLDER_NAME);
             subSection.videoUrl = uploadDetails.secure_url;
             subSection.timeDuration = uploadDetails.duration;
