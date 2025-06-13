@@ -85,6 +85,9 @@ router.post('/getFullCourseDetails', auth, getFullCourseDetails);
 // Get all Courses Under a Specific Admin
 router.get("/getInstructorCourses", auth, isAdmin, getInstructorCourses)
 
+// Get all Courses Under a Specific Instructor
+router.get("/getInstructorCoursesForInstructor", auth, isInstructor, getInstructorCourses)
+
 
 // Edit Course routes
 router.post("/editCourse", auth, isAdmin, upload.single('thumbnailImage'), editCourse)

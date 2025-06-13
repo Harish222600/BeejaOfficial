@@ -79,6 +79,19 @@ app.get('/', (req, res) => {
     </div>`);
 });
 
+// Error handling middleware for Multer errors and others
+app.use((err, req, res, next) => {
+    if (err.name === 'MulterError') {
+        if (err.code === 'LIMIT_FILE_SIZE') {
+            return res.status(400).json({ error: 'File size is too large. Maximum limit is 100MB.' });
+        }
+        return res.status(400).json({ error: err.message });
+    }
+    // Handle other errors
+    console.error(err);
+    res.status(500).json({ error: 'An internal server error occurred.' });
+});
+
 // connections
 connectDB();
 cloudinaryConnect();

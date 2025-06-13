@@ -37,7 +37,8 @@ exports.auth = (req, res, next) => {
             console.log('Token verified successfully:', {
                 email: decode.email,
                 accountType: decode.accountType,
-                id: decode.id
+                id: decode.id,
+                tokenFull: decode
             });
             
             req.user = decode;

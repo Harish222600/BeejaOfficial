@@ -1,5 +1,5 @@
 import { toast } from "react-hot-toast"
-
+const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
 import { updateCompletedLectures } from "../../slices/viewCourseSlice"
 // import { setLoading } from "../../slices/profileSlice";
 import { apiConnector } from "../apiConnector"
@@ -297,18 +297,18 @@ export const deleteSubSection = async (data, token) => {
 }
 
 // ================ fetch Instructor Courses ================
-export const fetchInstructorCourses = async (token) => {
+export const fetchInstructorCourses = async (token, userRole) => {
   let result = []
   // const toastId = toast.loading("Loading...")
   try {
-    const response = await apiConnector(
-      "GET",
-      GET_ALL_INSTRUCTOR_COURSES_API,
-      null,
-      {
-        Authorization: `Bearer ${token}`,
-      }
-    )
+    const endpoint =
+      userRole === "Admin"
+        ? GET_ALL_INSTRUCTOR_COURSES_API
+        : BASE_URL + "/api/v1/course/getInstructorCoursesForInstructor"
+
+    const response = await apiConnector("GET", endpoint, null, {
+      Authorization: `Bearer ${token}`,
+    })
     console.log("INSTRUCTOR COURSES API RESPONSE", response)
     if (!response?.data?.success) {
       throw new Error("Could Not Fetch Instructor Courses")
