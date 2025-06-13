@@ -35,6 +35,7 @@ import Cart from "./components/core/Dashboard/Cart/Cart";
 import EnrolledCourses from "./components/core/Dashboard/EnrolledCourses";
 import AddCourse from "./components/core/Dashboard/AddCourse/AddCourse";
 import AccessRequests from "./components/core/Dashboard/AccessRequests";
+import PurchaseHistory from "./components/core/Dashboard/PurchaseHistory/PurchaseHistory";
 
 import ViewCourse from "./pages/ViewCourse";
 import VideoDetails from './components/core/ViewCourse/VideoDetails';
@@ -159,6 +160,7 @@ function App() {
             <>
               <Route path="dashboard/cart" element={<Cart />} />
               <Route path="dashboard/enrolled-courses" element={<EnrolledCourses />} />
+              <Route path="dashboard/purchase-history" element={<PurchaseHistory />} />
               <Route path="dashboard/access-requests" element={<AccessRequests />} />
             </>
           )}
@@ -168,7 +170,6 @@ function App() {
           {user?.accountType === ACCOUNT_TYPE.INSTRUCTOR && (
             <>
               <Route path="dashboard/instructor" element={<Instructor />} />
-              <Route path="dashboard/add-course" element={<AddCourse />} />
               <Route path="dashboard/my-courses" element={<MyCourses />} />
               <Route path="dashboard/edit-course/:courseId" element={<EditCourse />} />
             </>

@@ -39,14 +39,7 @@ export default function MyCourses() {
       <div className="mb-14 flex justify-between">
         {/* <div className="mb-14 flex items-center justify-between"> */}
         <h1 className="text-4xl font-medium text-richblack-5 font-boogaloo text-center lg:text-left">My Courses</h1>
-        <IconBtn
-          text="Add Course"
-          onclick={() => navigate("/dashboard/add-course")}
-        >
-          <VscAdd />
-        </IconBtn>
       </div>
-
       {/* course Table */}
       {courses && <CoursesTable courses={courses} setCourses={setCourses} loading={loading} setLoading={setLoading} />}
     </div>
